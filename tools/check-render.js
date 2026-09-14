@@ -57,6 +57,10 @@ async function render(file) {
   await page.goto('file://' + path.resolve(file));
   await page.waitForFunction(() => typeof quote === 'function');
 
+  // Which encoding the browser actually settled on. Compared between builds before
+  // any text is, because a mismatch makes every non-ASCII character differ.
+  const charset = await page.evaluate(() => document.characterSet);
+
   // Drive state through the page's own model, then let it draw itself exactly as
   // it would for a user. Three lines, breaks on, so most of the UI is exercised.
   const dom = await page.evaluate((PANELS) => {
@@ -79,7 +83,7 @@ async function render(file) {
   }, PANELS);
 
   await browser.close();
-  return { dom, errors };
+  return { dom, errors, charset };
 }
 
 (async () => {
@@ -88,6 +92,15 @@ async function render(file) {
 
   if (a.errors.length) { console.error('baseline threw:\n  ' + a.errors.join('\n  ')); process.exit(1); }
   if (b.errors.length) { console.error('candidate threw:\n  ' + b.errors.join('\n  ')); process.exit(1); }
+
+  // A page with no <meta charset> lets the browser guess, and the guess is not
+  // reliably stable. When the two builds resolve to different encodings, every
+  // non-ASCII character differs and the panel diff is noise hiding the real cause.
+  if (a.charset !== b.charset) {
+    console.error(`\n✗ the two builds decoded as different character sets — baseline ${a.charset}, candidate ${b.charset}`);
+    console.error('  Any text diff below is that, not a rendering change. Check for <meta charset="utf-8">.\n');
+    process.exit(1);
+  }
 
   const diffs = diff(b.dom, a.dom, 'dom', []);
   const nonEmpty = Object.values(a.dom).filter((v) => v && v.length > 20).length;
