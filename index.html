@@ -1,0 +1,1248 @@
+<title>Lakeland Estimating Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#FBFAF9; --panel:#F3F2ED; --panel-2:#EAE8E1; --rule:#DEDCD6; --rule-2:#C9C6BE;
+  --ink:#14161A; --ink-2:#4A4F57; --muted:#7C828B;
+  --accent:#1488B6; --accent-deep:#0C6288; --accent-wash:#E4F1F7;
+  --flag:#B4006F; --flag-wash:#FBE6F2;
+  --ok:#0A6B40; --ok-wash:#E2F1E9;
+  --warn:#96600A; --warn-wash:#F7EEDC;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+  --disp:'Saira Condensed','IBM Plex Sans',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131519; --panel:#1B1E24; --panel-2:#22262D; --rule:#2C3138; --rule-2:#3C424B;
+    --ink:#ECEAE5; --ink-2:#B4B8BF; --muted:#858B94;
+    --accent:#3FAEDA; --accent-deep:#8FD3EE; --accent-wash:#12303D;
+    --flag:#F177BD; --flag-wash:#3A1029;
+    --ok:#5FCB96; --ok-wash:#0E2E21;
+    --warn:#E0AE5A; --warn-wash:#33260F;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131519; --panel:#1B1E24; --panel-2:#22262D; --rule:#2C3138; --rule-2:#3C424B;
+  --ink:#ECEAE5; --ink-2:#B4B8BF; --muted:#858B94;
+  --accent:#3FAEDA; --accent-deep:#8FD3EE; --accent-wash:#12303D;
+  --flag:#F177BD; --flag-wash:#3A1029;
+  --ok:#5FCB96; --ok-wash:#0E2E21;
+  --warn:#E0AE5A; --warn-wash:#33260F;
+}
+*{box-sizing:border-box}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1460px; margin:0 auto; padding-inline:20px; padding-block:0 56px}
+
+header{border-bottom:1px solid var(--rule); background:var(--panel); margin-inline:-20px; padding-inline:20px; padding-block:18px 16px; margin-bottom:18px}
+.hbar{max-width:1420px; margin:0 auto; display:flex; flex-wrap:wrap; gap:16px 28px; align-items:flex-end; justify-content:space-between}
+h1{font-family:var(--disp); font-weight:700; font-size:32px; line-height:1; margin:0; text-wrap:balance}
+h1 span{color:var(--accent)}
+.sub{color:var(--ink-2); font-size:13px; margin-top:6px; max-width:66ch}
+.machines{display:flex; gap:10px; flex-wrap:wrap}
+.mach{border:1px solid var(--rule-2); border-radius:3px; background:var(--paper); padding:7px 11px; min-width:150px}
+.mach b{display:block; font-family:var(--disp); font-size:15px; font-weight:600}
+.mach i{display:block; font-style:normal; font-family:var(--mono); font-size:10.5px; color:var(--muted); margin-top:2px}
+
+.grid{display:grid; gap:18px; grid-template-columns:minmax(0,1fr); align-items:start}
+@media(min-width:920px){ .grid{grid-template-columns:288px minmax(0,1fr)} .col-3{grid-column:1/-1} }
+@media(min-width:1280px){ .grid{grid-template-columns:284px minmax(0,1fr) 322px} .col-3{grid-column:auto} }
+
+section{border:1px solid var(--rule); background:var(--panel); border-radius:4px; margin-bottom:18px}
+section:last-child{margin-bottom:0}
+.sec-h{display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:11px 14px; border-bottom:1px solid var(--rule)}
+.sec-h h2{font-family:var(--disp); font-weight:600; font-size:16px; letter-spacing:.05em; text-transform:uppercase; margin:0}
+.sec-h em{font-style:normal; font-family:var(--mono); font-size:10.5px; color:var(--muted)}
+.sec-b{padding:14px}
+.stack{display:flex; flex-direction:column; gap:13px}
+
+label{display:block; font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:4px}
+input,select,textarea{width:100%; font-family:var(--mono); font-size:13px; color:var(--ink); background:var(--paper); border:1px solid var(--rule-2); border-radius:3px; padding:7px 8px; appearance:none}
+select{font-family:var(--sans); background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%); background-position:calc(100% - 15px) 14px, calc(100% - 10px) 14px; background-size:5px 5px,5px 5px; background-repeat:no-repeat; padding-right:26px}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible,textarea:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:9px}
+.hint{font-size:11.5px; color:var(--muted); line-height:1.4}
+
+/* customer strip */
+.cust{display:grid; gap:10px; grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:700px){.cust{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:1100px){.cust{grid-template-columns:1.4fr 1fr .8fr .8fr 1.4fr}}
+.cust input{font-family:var(--sans)}
+.cust input.mono{font-family:var(--mono)}
+
+/* lines */
+.linewrap{overflow-x:auto; margin-inline:-14px; padding-inline:14px}
+table.lines{width:100%; border-collapse:collapse; min-width:980px}
+table.lines td:nth-child(6) select{min-width:126px}
+table.lines td:nth-child(7) select{min-width:84px}
+table.lines td:nth-child(8) select{min-width:76px}
+table.lines th{text-align:left; font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); font-weight:600; padding:0 6px 6px 0; border-bottom:1px solid var(--rule-2); white-space:nowrap}
+table.lines td{padding:5px 6px 5px 0; border-bottom:1px solid var(--rule); vertical-align:middle}
+table.lines input,table.lines select{padding:5px 6px; font-size:12.5px}
+table.lines tr.sel td{background:var(--accent-wash)}
+table.lines tr{cursor:pointer}
+.xbtn{border:1px solid var(--rule-2); background:var(--paper); color:var(--muted); border-radius:3px; width:24px; height:24px; line-height:1; cursor:pointer; font-size:14px; padding:0}
+.xbtn:hover{border-color:var(--flag); color:var(--flag)}
+.lineno{font-family:var(--mono); font-size:11px; color:var(--muted); width:18px}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px}
+th{text-align:left; font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); font-weight:600; padding:0 8px 6px 0; border-bottom:1px solid var(--rule-2); white-space:nowrap}
+td{padding:6px 8px 6px 0; border-bottom:1px solid var(--rule); vertical-align:top}
+tr:last-child td{border-bottom:0}
+.num{text-align:right; font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; padding-right:0}
+th.num{padding-right:0}
+.tot td{border-top:1.5px solid var(--rule-2); border-bottom:0; font-weight:600; padding-top:8px}
+.fx{font-family:var(--mono); font-size:10.5px; color:var(--muted); display:block; margin-top:2px; line-height:1.45}
+.op{font-weight:500}
+.tw{overflow-x:auto; margin-inline:-14px; padding-inline:14px}
+
+.matbox{border:1px solid var(--accent); border-radius:3px; padding:11px; display:flex; flex-direction:column; gap:9px; background:var(--paper); margin-top:8px}
+.cust-row{display:flex; align-items:baseline; gap:8px; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--rule); font-size:11.5px}
+.cust-row:last-child{border-bottom:0}
+.cust-row b{font-weight:500; color:var(--ink)}
+.cust-row span{color:var(--muted); font-family:var(--mono); font-size:10px; white-space:nowrap}
+.tog{display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:11.5px; color:var(--ink-2)}
+.tog input{width:auto; margin:0; appearance:auto; -webkit-appearance:checkbox; accent-color:var(--accent)}
+#breakTable th.qh{padding:0 6px 6px 0; vertical-align:bottom}
+#breakTable input.qty{width:66px; text-align:right; font-size:12.5px; padding:4px 6px}
+#breakTable input.mg{width:66px; text-align:right; font-size:11px; padding:3px 6px; color:var(--ink-2)}
+#breakTable td.cell{cursor:pointer}
+#breakTable td.cell:hover{background:var(--accent-wash)}
+#breakTable td.cell.on{background:var(--accent-wash); box-shadow:inset 2px 0 0 var(--accent)}
+.better{display:block; font-family:var(--mono); font-size:10px; color:var(--ok); margin-top:2px}
+.xq{border:0; background:none; color:var(--muted); cursor:pointer; font-size:12px; padding:0 2px}
+.xq:hover{color:var(--flag)}
+.tag{display:inline-block; font-family:var(--mono); font-size:9.5px; letter-spacing:.04em; padding:1px 5px; border-radius:2px; white-space:nowrap; vertical-align:1px}
+.t-po{background:var(--ok-wash); color:var(--ok)}
+.t-spec{background:var(--accent-wash); color:var(--accent-deep)}
+.t-leg{background:var(--warn-wash); color:var(--warn)}
+.t-shop{background:var(--flag-wash); color:var(--flag)}
+.t-pay{background:var(--ok-wash); color:var(--ok)}
+.t-mkt{background:var(--panel-2); color:var(--ink-2); border:1px solid var(--rule-2)}
+.t-1s{background:var(--panel-2); color:var(--ink-2)}
+.t-2s{background:var(--accent-wash); color:var(--accent-deep)}
+
+.hero{padding:16px 14px; border-bottom:1px solid var(--rule)}
+.hero .k{font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); font-weight:600}
+.hero .v{font-family:var(--disp); font-weight:700; font-size:44px; line-height:1; font-variant-numeric:tabular-nums; margin-top:4px}
+.hero .v small{font-size:20px; font-weight:600; color:var(--muted)}
+.hero .u{font-size:12px; color:var(--ink-2); margin-top:6px; font-family:var(--mono)}
+.marginbox{margin-top:13px; padding-top:12px; border-top:1px solid var(--rule)}
+.mrow{display:flex; align-items:center; gap:7px; margin-top:4px}
+.mrow input{width:88px; font-size:19px; font-weight:600; text-align:right; padding:5px 8px}
+.mpct{font-family:var(--disp); font-size:19px; font-weight:600; color:var(--muted)}
+.splits{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--rule); border-bottom:1px solid var(--rule)}
+.split{background:var(--panel); padding:10px 14px}
+.split .k{font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600}
+.split .v{font-family:var(--mono); font-size:17px; font-variant-numeric:tabular-nums; margin-top:2px; font-weight:500}
+.split .s{font-size:10.5px; color:var(--muted); font-family:var(--mono)}
+
+.strip{display:flex; gap:9px; overflow-x:auto; padding-bottom:6px; margin-inline:-14px; padding-inline:14px}
+.mini{flex:0 0 auto; width:158px; text-align:left; border:1px solid var(--rule-2); background:var(--paper); border-radius:3px; padding:8px; cursor:pointer; font-family:var(--sans); color:var(--ink); display:flex; flex-direction:column; gap:4px}
+.mini:hover{border-color:var(--accent)}
+.mini.on{border-color:var(--accent); border-width:2px; padding:7px; background:var(--accent-wash)}
+.mini b{font-size:11.5px; font-weight:600; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.mini .mini-svg{background:var(--panel-2); border:1px solid var(--rule); border-radius:2px; padding:3px; min-height:44px; display:flex; align-items:center}
+.mini .mini-svg svg{display:block; max-width:100%; height:auto}
+.mini .mini-m{font-family:var(--mono); font-size:10px; color:var(--muted)}
+.mini .mini-y{font-family:var(--mono); font-size:10.5px; font-weight:600}
+.y-ok{color:var(--ok)} .y-warn{color:var(--warn)} .y-bad{color:var(--flag)}
+.mini-bad{font-family:var(--mono); font-size:10.5px; color:var(--flag)}
+.nest{display:grid; gap:14px; grid-template-columns:minmax(0,1fr); align-items:start}
+@media(min-width:640px){.nest{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.nb{border:1px solid var(--rule-2); border-radius:3px; background:var(--paper); padding:10px}
+.nb h3{font-family:var(--disp); font-size:13px; letter-spacing:.06em; text-transform:uppercase; margin:0 0 2px; font-weight:600}
+.nb p{margin:0 0 8px; font-family:var(--mono); font-size:10.5px; color:var(--muted)}
+.nb svg{display:block; max-width:100%; height:auto; margin-inline:auto}
+
+.note{border-left:2px solid var(--flag); background:var(--flag-wash); color:var(--ink); padding:8px 11px; font-size:12px; border-radius:0 3px 3px 0}
+.note.i{border-left-color:var(--accent); background:var(--accent-wash)}
+.notes{display:flex; flex-direction:column; gap:7px; margin-top:12px}
+
+details.rates{border:1px solid var(--rule); background:var(--panel); border-radius:4px; margin-top:18px}
+details.rates>summary{list-style:none; cursor:pointer; padding:11px 14px; display:flex; gap:10px; align-items:baseline; justify-content:space-between; flex-wrap:wrap}
+details.rates>summary::-webkit-details-marker{display:none}
+details.rates>summary h2{font-family:var(--disp); font-weight:600; font-size:16px; letter-spacing:.05em; text-transform:uppercase; margin:0}
+details.rates>summary em{font-style:normal; font-size:11.5px; color:var(--muted)}
+details.rates[open]>summary{border-bottom:1px solid var(--rule)}
+.rgrid{padding:14px; display:grid; gap:16px; grid-template-columns:minmax(0,1fr)}
+@media(min-width:760px){.rgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1180px){.rgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.machout table{font-size:11.5px}
+.machout td,.machout th{padding:4px 6px 4px 0}
+.rgroup h3{font-family:var(--disp); font-size:13px; letter-spacing:.07em; text-transform:uppercase; margin:0 0 8px; color:var(--ink-2); font-weight:600; border-bottom:1px solid var(--rule-2); padding-bottom:5px}
+.p{display:grid; grid-template-columns:1fr 86px; gap:8px; align-items:center; padding:4px 0}
+.p label{margin:0; text-transform:none; letter-spacing:0; font-size:12px; color:var(--ink-2); font-weight:400; line-height:1.35}
+.p input{padding:4px 6px; font-size:12px; text-align:right}
+button.ghost{border:1px solid var(--rule-2); background:var(--paper); color:var(--ink-2); cursor:pointer; font-family:var(--sans); font-size:12px; padding:6px 12px; border-radius:3px}
+button.ghost:hover{border-color:var(--accent); color:var(--accent)}
+button.solid{border:1px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer; font-family:var(--sans); font-size:12px; font-weight:500; padding:6px 12px; border-radius:3px}
+:root[data-theme="dark"] button.solid{color:#0B1116}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) button.solid{color:#0B1116}}
+.foot{margin-top:22px; padding-top:14px; border-top:1px solid var(--rule); color:var(--muted); font-size:11.5px; max-width:92ch}
+:root[data-theme="dark"] </style>
+
+<div class="wrap">
+<header>
+  <div class="hbar">
+    <div>
+      <h1>Lakeland <span>Estimating Engine</span></h1>
+      <div class="sub">Material, labor and machine time for printed overlays and decals. Every line is estimated as its own run with its own setup — ganging is a production decision, and the gain stays on the floor.</div>
+    </div>
+    <div class="machines">
+      <div class="mach"><b>Epson SureColor S80600</b><i>K271A · 64" roll · 10-col GS3</i></div>
+      <div class="mach"><b>Graphtec FCX2000-120VC</b><i>47.2 × 36" bed · 400 mm/s</i></div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="sec-h"><h2>Quote for</h2><em id="qMeta"></em></div>
+  <div class="sec-b">
+    <div class="cust">
+      <div><label for="cCo">Company</label><input id="cCo" placeholder="Customer name"></div>
+      <div><label for="cContact">Contact</label><input id="cContact" placeholder="Name"></div>
+      <div><label for="cQuote">Quote #</label><input id="cQuote" class="mono" placeholder="Q-0000"></div>
+      <div><label for="cDate">Date</label><input id="cDate" class="mono" type="date"></div>
+      <div><label for="cJob">Job / description</label><input id="cJob" placeholder="What this quote covers"></div>
+    </div>
+  </div>
+</section>
+
+<div class="grid">
+
+  <!-- ============ STOCK & ROUTE ============ -->
+  <section>
+    <div class="sec-h"><h2>Stock &amp; route</h2><em>per construction</em></div>
+    <div class="sec-b stack">
+      <div class="hint">Each line picks a construction; these are the materials that construction uses. Set them once for the quote.</div>
+
+      <div style="border-top:1px solid var(--rule); padding-top:12px">
+        <label style="color:var(--accent-deep)">2-surface on rigid</label>
+        <div class="stack" style="gap:9px">
+          <div><label for="film2">Print film</label><select id="film2"></select></div>
+          <div><label for="adh2">Adhesive transfer</label><select id="adh2"></select></div>
+          <div><label for="rig2">Rigid substrate</label><select id="rig2"></select></div>
+          <div><label for="back2">Backer vinyl <span style="text-transform:none;letter-spacing:0;font-weight:400">— 4-layer builds only</span></label><select id="back2"></select></div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--rule); padding-top:12px">
+        <label>1-surface decal</label>
+        <div class="stack" style="gap:9px">
+          <div><label for="film1">Print film</label><select id="film1"></select></div>
+          <div><label for="olam1">Overlaminate</label><select id="olam1"></select></div>
+        </div>
+      </div>
+
+      <div id="customWrap" style="border-top:1px solid var(--rule); padding-top:12px">
+        <label style="margin-bottom:6px">Your own materials</label>
+        <div id="customList"></div>
+        <form id="matForm" hidden>
+          <div class="matbox">
+            <div id="matFormTitle" style="font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">New material</div>
+            <div><label for="mName">Name</label><input id="mName" placeholder="3M IJ180 cast white 48&quot;"></div>
+            <div class="row2" id="mRollDims">
+              <div><label for="mW">Roll width in</label><input id="mW" type="text" inputmode="decimal" placeholder="48"></div>
+              <div><label for="mL">Roll length ft</label><input id="mL" type="text" inputmode="decimal" placeholder="150"></div>
+            </div>
+            <div class="row2" id="mSheetDims" hidden>
+              <div><label for="mSW">Sheet width in</label><input id="mSW" type="text" inputmode="decimal" placeholder="24.5"></div>
+              <div><label for="mSH">Sheet height in</label><input id="mSH" type="text" inputmode="decimal" placeholder="48.5"></div>
+            </div>
+            <div>
+              <label>How was it quoted?</label>
+              <div class="seg" id="mCostMode">
+                <button type="button" data-v="sqft" aria-pressed="true">Per sq ft</button>
+                <button type="button" data-v="unit" aria-pressed="false">Per roll</button>
+              </div>
+            </div>
+            <div><label for="mCost" id="mCostLab">Dollars per sq ft</label><input id="mCost" type="text" inputmode="decimal" placeholder="0.35"></div>
+            <div class="hint" id="mDerived">—</div>
+            <div style="display:flex; gap:7px">
+              <button type="submit" class="solid" style="flex:1">Save material</button>
+              <button type="button" class="ghost" id="mCancel">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div style="border-top:1px solid var(--rule); padding-top:12px" class="row2">
+        <div><label for="mode">Print mode</label><select id="mode">
+          <option value="140" selected>Quality vinyl · 140</option>
+          <option value="195">Production vinyl · 195</option>
+          <option value="340">Production banner · 340</option>
+          <option value="1020">Draft · 1020</option>
+        </select></div>
+        <div><label for="cov">Ink coverage</label><select id="cov">
+          <option value="0.45">Light 45%</option>
+          <option value="0.75" selected>Medium 75%</option>
+          <option value="1">Heavy 100%</option>
+        </select></div>
+      </div>
+
+      <div class="hint" style="border-top:1px solid var(--rule); padding-top:11px">
+        <b>Print mode</b> sets the Epson's speed, so it drives press hours — quality vinyl 140 ft²/hr is the default for overlay work.
+        <b>Ink coverage</b> scales the ink cost only, nothing else.
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ LINES + DETAIL ============ -->
+  <div style="min-width:0">
+    <section>
+      <div class="sec-h"><h2>Quote lines</h2><em id="linesMeta"></em></div>
+      <div class="sec-b">
+        <div class="linewrap">
+          <table class="lines" id="lineTable">
+            <thead><tr>
+              <th></th><th style="min-width:190px">Description</th><th class="num">W in</th><th class="num">H in</th>
+              <th class="num">Qty</th><th>Construction</th><th>Die cut</th><th>Art</th>
+              <th class="num">Cost/pc</th><th class="num">Sell/pc</th><th class="num">Ext. sell</th><th></th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center">
+          <button class="solid" id="addLine">Add line</button>
+          <button class="ghost" id="dupLine">Duplicate selected</button>
+          <button class="ghost" id="newEst">New estimate</button>
+          <span class="hint" id="selHint"></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="breaksSec">
+      <div class="sec-h">
+        <h2>Quantity breaks</h2>
+        <em id="breaksMeta">
+          <label class="tog"><input type="checkbox" id="breaksOn"> price at other quantities</label>
+        </em>
+      </div>
+      <div class="sec-b" id="breaksBody" hidden>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px">
+          <div class="seg" id="breakView" style="max-width:320px">
+            <button data-v="sell" aria-pressed="true">Sell / pc</button>
+            <button data-v="ext" aria-pressed="false">Extended</button>
+            <button data-v="cost" aria-pressed="false">Cost / pc</button>
+          </div>
+          <div style="display:flex; gap:8px">
+            <button class="ghost" id="addBreak">Add quantity</button>
+          </div>
+        </div>
+        <div class="tw"><table id="breakTable"><thead></thead><tbody></tbody><tfoot></tfoot></table></div>
+        <div class="notes" id="breakNotes"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-h"><h2>Line build-up</h2><em id="buildTag"></em></div>
+      <div class="sec-b">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:7px">
+          <label style="margin:0">Roll imposition — every line</label>
+          <span class="hint">Waste = film paid for but not turned into product. Click a card to open that line.</span>
+        </div>
+        <div class="strip" id="nestStrip" role="tablist" aria-label="Roll imposition by line"></div>
+
+        <div class="nest" style="margin-top:16px">
+          <div class="nb">
+            <h3 id="nestRollH">Roll imposition</h3>
+            <p id="nestRollP">—</p>
+            <div id="nestRoll"></div>
+          </div>
+          <div class="nb">
+            <h3 id="nestSheetH">Sheet imposition</h3>
+            <p id="nestSheetP">—</p>
+            <div id="nestSheet"></div>
+          </div>
+        </div>
+
+        <div class="tw" style="margin-top:18px">
+          <table id="matTable">
+            <thead><tr><th style="width:38%">Material</th><th class="num">Consumed</th><th class="num">Unit cost</th><th class="num">Cost</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="tw" style="margin-top:22px">
+          <table id="opTable">
+            <thead><tr><th style="width:44%">Operation</th><th class="num">Machine hr</th><th class="num">Labor hr</th><th class="num">Cost</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="notes" id="notes"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ QUOTE TOTAL ============ -->
+  <section class="col-3">
+    <div class="sec-h"><h2>Quote total</h2><em id="resTag"></em></div>
+
+    <div class="hero">
+      <div class="k">Sell price</div>
+      <div class="v" id="quotePrice"><small>$</small>0</div>
+      <div class="u" id="quoteSub">—</div>
+      <div class="marginbox">
+        <label for="marg" style="margin:0">Gross margin</label>
+        <div class="mrow">
+          <input id="marg" type="number" step="1" min="0" max="95" value="35" aria-describedby="margHint">
+          <span class="mpct">%</span>
+        </div>
+        <div class="hint" id="margHint">Sell = cost ÷ (1 − margin). Change it and every line reprices.</div>
+      </div>
+    </div>
+
+    <div class="splits">
+      <div class="split"><div class="k">Material</div><div class="v" id="sMat">$0</div><div class="s" id="sMatPct">—</div></div>
+      <div class="split"><div class="k">Labor + machine</div><div class="v" id="sLab">$0</div><div class="s" id="sLabPct">—</div></div>
+      <div class="split"><div class="k">Machine hours</div><div class="v" id="sMh">0.00</div><div class="s">press + laminator + cutter</div></div>
+      <div class="split"><div class="k">Labor hours</div><div class="v" id="sLh">0.00</div><div class="s">all operations</div></div>
+    </div>
+
+    <div class="sec-b" style="border-bottom:1px solid var(--rule)">
+      <table><tbody id="priceTable"></tbody></table>
+    </div>
+
+    <div class="sec-b">
+      <label style="margin-bottom:7px">Cost by line</label>
+      <div class="tw">
+        <table id="byLine"><tbody></tbody></table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<details class="rates" id="ratesBox">
+  <summary>
+    <h2>Rates &amp; assumptions</h2>
+    <em>Every number the engine uses — edit any of them. <span class="tag t-pay">payroll</span> <span class="tag t-po">vendor PO</span> <span class="tag t-spec">machine spec</span> <span class="tag t-leg">legacy Approach</span> <span class="tag t-shop">shop input</span></em>
+  </summary>
+  <div class="rgrid" id="rgrid"></div>
+  <div style="padding:0 14px 14px; display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+    <button class="ghost" id="reset">Reset to seeded defaults</button>
+    <span class="hint">Edits are kept in this browser.</span>
+  </div>
+</details>
+
+<div class="foot" id="foot"></div>
+</div>
+
+
+<script>
+"use strict";
+
+/* ---------------- material library (real purchase prices) ---------------- */
+const R=(w,lenFt,cost)=>({rollW:w,lenFt,cost,psf:cost/(w/12*lenFt)});
+const FILMS=[
+ {id:'ij35c54', n:'3M IJ35C matte white w/Comply 54"', v:'Grimco · 53 rl', ...R(54,150,230.46)},
+ {id:'ij35c60', n:'3M IJ35C matte white w/Comply 60"', v:'Grimco · 1 rl',  ...R(60,150,259.47)},
+ {id:'or3651',  n:'Orajet 3651GRA gloss white 54"',    v:'Grimco · 6 rl',  ...R(54,150,367.47)},
+ {id:'arlon',   n:'Arlon 4500GLX Xscape gloss 54"',    v:'Grimco · 1 rl',  ...R(54,150,240.16)},
+ {id:'3m50t',   n:'3M 50 transparent 24"',             v:'Grimco · 155 rl',...R(24,150,147.47)},
+ {id:'o651c',   n:'Oracal 651 clear 24"',              v:'Grimco · 68 rl', ...R(24,150,134.86)},
+ {id:'o651w',   n:'Oracal 651 white 24"',              v:'Grimco · 19 rl', ...R(24,150,103.12)},
+ {id:'adh35',   n:'3.5 mil white matte perm 27"',      v:'Adhue · 4 rl',   ...R(27,150,98.96)},
+ {id:'adh23',   n:'2.3 mil white barrier 27"',         v:'Adhue · 2 rl',   ...R(27,150,87.48)},
+ {id:'pvcflex', n:'PVC Flex 3.2 mil white perm 54"',   v:'Adhue · 1 rl',   ...R(54,150,197.92)},
+ {id:'mag',     n:'NF flex magnet .030 24.375"',       v:'Grimco · 2 rl',  ...R(24.375,50,167.95)},
+];
+const OLAMS=[
+ {id:'none', n:'None', v:'', rollW:0,lenFt:0,cost:0,psf:0},
+ {id:'8519_54', n:'3M 8519 luster overlam 54"',   v:'Grimco · 41 rl', ...R(54,150,618.99)},
+ {id:'8518_485',n:'3M 8518 gloss overlam 48.5"',  v:'Grimco · 17 rl', ...R(48.5,150,550.80)},
+ {id:'8518_54', n:'3M 8518 gloss overlam 54"',    v:'Grimco · 1 rl',  ...R(54,150,679.92)},
+ {id:'8519_485',n:'3M 8519 luster overlam 48.5"', v:'Grimco · 8 rl',  ...R(48.5,150,608.08)},
+ {id:'adhpet',  n:'Clear PET perm 1 mil 27"',     v:'Adhue · 2 rl',   ...R(27,750,189.74)},
+];
+const ADHS=[
+ {id:'none', n:'None', v:'', rollW:0,lenFt:0,cost:0,psf:0},
+ {id:'9505_18', n:'3M 9505 adhesive transfer 18"', v:'TapeCase · 180 yd', ...R(18,540,732.18)},
+ {id:'9505_24', n:'3M 9505 adhesive transfer 24"', v:'TapeCase · 180 yd', ...R(24,540,878.51)},
+];
+const S=(w,h,cost)=>({shW:w,shH:h,cost,psf:cost/(w*h/144)});
+const RIGIDS=[
+ {id:'acr15', n:'Acrylic 15 mil V/G 24.5×48.5', v:'Adhue · 19,670 sh', ...S(24.5,48.5,5.64)},
+ {id:'acr10g',n:'Acrylic 10 mil V/G 24.5×48.5', v:'Adhue · 400 sh',    ...S(24.5,48.5,4.52)},
+ {id:'acr10m',n:'Acrylic 10 mil V/M 24.5×48.5', v:'Adhue · 25 sh',     ...S(24.5,48.5,4.08)},
+ {id:'pc15',  n:'Polycarb 15 mil V/G 24×48',    v:'Adhue · 550 sh',    ...S(24,48,4.08)},
+ {id:'pc10',  n:'Polycarb 10 mil V/M 24×48',    v:'Adhue · 300 sh',    ...S(24,48,2.85)},
+ {id:'pc30',  n:'Polycarb 30 mil G/G 24×48',    v:'Adhue · 39 sh',     ...S(24,48,10.64)},
+ {id:'pc60',  n:'Lexan .060 24×48',             v:'Polymershapes',     ...S(24,48,21.67)},
+ {id:'pc030s',n:'Polycarb .030 16×16.875',      v:'Polymershapes',     ...S(16,16.875,4.17)},
+ {id:'pvc15', n:'PVC 15 mil white 25×52',       v:'Adhue · 50 sh',     ...S(25,52,2.84)},
+ {id:'pvc20', n:'PVC 20 mil white 25×52',       v:'Adhue · 25 sh',     ...S(25,52,3.47)},
+ {id:'sty30', n:'Styrene .030 48×96',           v:'Adhue · 207 sh',    ...S(48,96,13.60)},
+ {id:'fpvc',  n:'Foam PVC .118 24×48',          v:'Polymershapes',     ...S(24,48,9.40)},
+];
+/* Materials Melissa adds herself. Kept with the rate settings, not the quote, so a
+   stock she enters once is still there next time. */
+let CUSTOM=[];
+try{ const s=localStorage.getItem('lg-est-materials'); if(s) CUSTOM=JSON.parse(s)||[]; }catch(e){}
+const saveCustom=()=>{try{localStorage.setItem('lg-est-materials',JSON.stringify(CUSTOM));}catch(e){}};
+const customRolls =()=>CUSTOM.filter(c=>c.kind==='roll');
+const customSheets=()=>CUSTOM.filter(c=>c.kind==='sheet');
+const FILMS_ALL =()=>[...FILMS, ...customRolls()];
+const OLAMS_ALL =()=>[...OLAMS, ...customRolls()];
+const ADHS_ALL  =()=>[...ADHS,  ...customRolls()];
+const RIGIDS_ALL=()=>[...RIGIDS,...customSheets()];
+const byId=(arr,id)=>arr.find(x=>x.id===id)||arr[0];
+
+/* ---------------- parameters ---------------- */
+const SRC={po:['vendor PO','t-po'],spec:['machine spec','t-spec'],leg:['legacy Approach','t-leg'],shop:['shop input','t-shop'],pay:['payroll','t-pay'],mkt:['dealer list','t-mkt'],usr:['you entered this','t-mkt']};
+
+/* Work centres — rates from the Lakeland payroll sheet, Sept 2026. Roles, not names. */
+const CREW=[
+ {id:'mai',   n:'Production artist',      w:33.00, r:'Artwork setup and prepress'},
+ {id:'diana', n:'Digital press operator', w:45.00, r:'Runs all digital print jobs; production management'},
+ {id:'terry', n:'Laminator operator',     w:26.75, r:'Laminating, mounting, die cutting'},
+ {id:'mark',  n:'Die cutter operator',    w:31.00, r:'Flatbed die cutting'},
+ {id:'karen', n:'Inspection / shipping',   w:23.25, r:'Product inspection, packing, order fill'},
+ {id:'todd',  n:'Screen production',      w:28.00, r:'Screen making and reclaim; backup finishing'},
+ {id:'brian', n:'Screen press operator',  w:28.00, r:'Screen printing'},
+ {id:'andy',  n:'Estimator / purchasing', w:46.25, r:'Estimating, raw material purchasing, job tickets'},
+ {id:'tim',   n:'Account coordinator',    w:47.50, r:'Order coordination through delivery'},
+];
+const ROLES=[
+ {k:'opArt',    l:'Prepress / artwork',  d:'mai'},
+ {k:'opPrint',  l:'Print — Epson',       d:'diana'},
+ {k:'opLam',    l:'Laminate',            d:'terry'},
+ {k:'opMount',  l:'Mount to substrate',  d:'terry'},
+ {k:'opPrecut', l:'Pre-cut to bed',      d:'terry'},
+ {k:'opCut',    l:'Die cut',             d:'mark'},
+ {k:'opWeed',   l:'Weed &amp; inspect',      d:'karen'},
+ {k:'opShip',   l:'Pack &amp; ship',         d:'karen'},
+];
+const PARAMS=[
+ {g:'Press — Epson S80600', k:'gutter',    l:'Gutter between parts (in)',       d:0.25, s:'shop'},
+ {g:'Press — Epson S80600', k:'edge',      l:'Unprintable edge each side (in)', d:0.5,  s:'spec'},
+ {g:'Press — Epson S80600', k:'maxPrintW', l:'Max printed width used (in)',     d:46,   s:'shop'},
+ {g:'Press — Epson S80600', k:'leadFt',    l:'Leader + trailer waste per run (ft)', d:3, s:'shop'},
+ {g:'Press — Epson S80600', k:'printSetup',l:'Load, RIP &amp; colour check (hr)',   d:0.25, s:'shop'},
+ {g:'Press — Epson S80600', k:'inkMl',     l:'Ink at 100% coverage (ml/sq ft)', d:1.2,  s:'shop'},
+ {g:'Press — Epson S80600', k:'inkCost',   l:'Ink cost ($/ml) — $216 per 700 ml cart', d:0.3086, s:'po'},
+ {g:'Press — Epson S80600', k:'printAtt',  l:'Operator attendance on run (×)',  d:0.35, s:'shop'},
+
+ {g:'Laminate &amp; mount', k:'lamFtMin',  l:'Laminator speed (ft/min) — 463TH tops out at 13', d:8, s:'spec'},
+ {g:'Laminate &amp; mount', k:'mOverlam',  l:'Machine — overlaminate pass', d:'l463',  s:'shop', type:'mach'},
+ {g:'Laminate &amp; mount', k:'mAdhesive', l:'Machine — adhesive pass',     d:'l2426', s:'shop', type:'mach'},
+ {g:'Laminate &amp; mount', k:'mMount',    l:'Machine — mount to rigid',    d:'l463',  s:'shop', type:'mach'},
+ {g:'Laminate &amp; mount', k:'lamSetup',  l:'Laminator setup per pass (hr)',   d:0.15, s:'shop'},
+ {g:'Laminate &amp; mount', k:'mountMin',  l:'Mount to rigid (min/sheet)',      d:1.5,  s:'shop'},
+ {g:'Laminate &amp; mount', k:'precutHr',  l:'Pre-cut / trim to bed (hr)',      d:0.3,  s:'leg'},
+ {g:'Laminate &amp; mount', k:'sheetTrim', l:'Sheet edge trim each side (in)',  d:0.25, s:'shop'},
+ {g:'Laminate &amp; mount', k:'setupSh',   l:'Makeready sheets per run',        d:1,    s:'shop'},
+
+ {g:'Die cut — FCX2000', k:'bedW',      l:'Cutter bed width (in)',            d:47.2, s:'spec'},
+ {g:'Die cut — FCX2000', k:'bedH',      l:'Cutter bed depth (in)',            d:36,   s:'spec'},
+ {g:'Die cut — FCX2000', k:'cutIps',    l:'Blade speed (in/sec)',             d:7.9,  s:'spec'},
+ {g:'Die cut — FCX2000', k:'cutEff',    l:'Speed realised, accel/decel (×)',  d:0.55, s:'shop'},
+ {g:'Die cut — FCX2000', k:'pathFac',   l:'Path vs. perimeter, cut-outs (×)', d:1.15, s:'shop'},
+ {g:'Die cut — FCX2000', k:'passThru',  l:'Passes — through cut',             d:2,    s:'shop'},
+ {g:'Die cut — FCX2000', k:'setupThru', l:'Setup — through cut (hr)',         d:0.25, s:'leg'},
+ {g:'Die cut — FCX2000', k:'setupKiss', l:'Setup — kiss cut (hr)',            d:0.30, s:'leg'},
+ {g:'Die cut — FCX2000', k:'loadMin',   l:'Load, register, unload (min/panel)',d:0.5, s:'shop'},
+ {g:'Die cut — FCX2000', k:'cutAtt',    l:'Operator attendance on cut (×)',   d:0.8,  s:'shop'},
+
+ {g:'Labor, finishing &amp; rates', k:'artNew',   l:'Prepress — new graphic (hr)', d:0.75, s:'shop'},
+ {g:'Labor, finishing &amp; rates', k:'artRep',   l:'Prepress — repeat (hr)',      d:0.10, s:'shop'},
+ {g:'Labor, finishing &amp; rates', k:'weedSec',  l:'Weed &amp; inspect (sec/piece)',  d:6,   s:'shop'},
+ {g:'Labor, finishing &amp; rates', k:'shipHr',   l:'Pack &amp; ship per QUOTE (hr)',  d:0.2, s:'leg'},
+ {g:'Labor, finishing &amp; rates', k:'spoil',    l:'Material spoilage (%)',       d:5,    s:'shop'},
+ {g:'Labor, finishing &amp; rates', k:'margin',   l:'Target gross margin (%)',     d:35,   s:'shop'},
+ {g:'Crew &amp; burden', k:'burden', l:'Burden on wages (%)', d:30, s:'shop'},
+
+ {g:'Machine cost rates', k:'util', l:'Productive hours per machine, per year', d:600, s:'shop'},
+ {g:'Machine cost rates', k:'elec', l:'Electricity ($/kWh)', d:0.12, s:'shop'},
+ {g:'Machine cost rates', k:'cap_press', l:'Epson — replacement cost ($)', d:23685, s:'mkt'},
+ {g:'Machine cost rates', k:'life_press',l:'Epson — useful life (yr)', d:5, s:'shop'},
+ {g:'Machine cost rates', k:'svc_press', l:'Epson — service, heads, parts ($/yr)', d:3000, s:'shop'},
+ {g:'Machine cost rates', k:'kw_press',  l:'Epson — draw (kW)', d:1.8, s:'shop'},
+ {g:'Machine cost rates', k:'cap_cut',   l:'Graphtec — replacement cost ($)', d:22000, s:'mkt'},
+ {g:'Machine cost rates', k:'life_cut',  l:'Graphtec — useful life (yr)', d:7, s:'shop'},
+ {g:'Machine cost rates', k:'svc_cut',   l:'Graphtec — blades, mats, service ($/yr)', d:1200, s:'shop'},
+ {g:'Machine cost rates', k:'kw_cut',    l:'Graphtec — draw with vacuum (kW)', d:1.0, s:'shop'},
+ {g:'Machine cost rates', k:'cap_l463',  l:'GFP 463TH — replacement cost ($)', d:6508, s:'mkt'},
+ {g:'Machine cost rates', k:'life_l463', l:'GFP 463TH — useful life (yr)', d:10, s:'shop'},
+ {g:'Machine cost rates', k:'svc_l463',  l:'GFP 463TH — rollers, service ($/yr)', d:500, s:'shop'},
+ {g:'Machine cost rates', k:'kw_l463',   l:'GFP 463TH — draw (kW)', d:1.5, s:'shop'},
+ {g:'Machine cost rates', k:'cap_l2426', l:'Flexcon 2426F — replacement cost ($)', d:5000, s:'shop'},
+ {g:'Machine cost rates', k:'life_l2426',l:'Flexcon 2426F — useful life (yr)', d:10, s:'shop'},
+ {g:'Machine cost rates', k:'svc_l2426', l:'Flexcon 2426F — service ($/yr)', d:400, s:'shop'},
+ {g:'Machine cost rates', k:'kw_l2426',  l:'Flexcon 2426F — draw (kW)', d:1.0, s:'shop'},
+ {g:'Machine cost rates', k:'cap_l230',  l:'GFP 230C — replacement cost ($)', d:3000, s:'shop'},
+ {g:'Machine cost rates', k:'life_l230', l:'GFP 230C — useful life (yr)', d:10, s:'shop'},
+ {g:'Machine cost rates', k:'svc_l230',  l:'GFP 230C — service ($/yr)', d:250, s:'shop'},
+ {g:'Machine cost rates', k:'kw_l230',   l:'GFP 230C — draw (kW)', d:0.8, s:'shop'},
+ ...CREW.map(c=>({g:'Crew &amp; burden', k:'w_'+c.id, l:`${c.n} — ${c.r.split('—')[0].trim()} ($/hr)`, d:c.w, s:'pay'})),
+ ...ROLES.map(r=>({g:'Who runs what', k:r.k, l:r.l, d:r.d, s:'shop', type:'sel'})),
+];
+const DEF=Object.fromEntries(PARAMS.map(p=>[p.k,p.d]));
+let P={...DEF};
+try{const s=localStorage.getItem('lg-est-params'); if(s) P={...DEF,...JSON.parse(s)};}catch(e){}
+const saveP=()=>{try{localStorage.setItem('lg-est-params',JSON.stringify(P));}catch(e){}};
+const MACH=[
+ {k:'press', n:'Epson S80600',   sub:'64" solvent roll'},
+ {k:'l463',  n:'GFP 463TH',      sub:'63" top heat · overlaminate + mount'},
+ {k:'l2426', n:'Flexcon 2426F',  sub:'26" · adhesive films'},
+ {k:'l230',  n:'GFP 230C',       sub:'30" compact · small jobs'},
+ {k:'cut',   n:'Graphtec FCX2000', sub:'47.2 × 36" flatbed'},
+];
+function machParts(m,hours){
+  const hrs=Math.max(1,hours==null?+P.util:hours);
+  const cap=(+P['cap_'+m])/Math.max(1,+P['life_'+m])/hrs;
+  const svc=(+P['svc_'+m])/hrs;
+  const pwr=(+P['kw_'+m])*(+P.elec);
+  return {cap,svc,pwr,tot:cap+svc+pwr};
+}
+const machRate=m=>machParts(m).tot;
+const machName=k=>(MACH.find(m=>m.k===k)||{n:k}).n;
+const crewOf=k=>CREW.find(c=>c.id===P[k])||CREW[0];
+const wageOf=k=>+P['w_'+crewOf(k).id]||crewOf(k).w;
+const rateOf=k=>wageOf(k)*(1+(+P.burden)/100);
+
+/* ---------------- quote state ---------------- */
+const uid=()=>Math.random().toString(36).slice(2,9);
+const blankLine=()=>({id:uid(),desc:'',w:'',h:'',qty:'',con:'1',dcut:'through',art:'new'});
+
+
+let Q={
+  cust:{co:'',contact:'',quote:'',date:new Date().toISOString().slice(0,10),job:''},
+  stock:{film2:'3m50t',adh2:'9505_24',rig2:'acr15',back2:'o651w',film1:'ij35c54',olam1:'8519_54',mode:140,cov:0.75},
+  lines:[blankLine()],
+  breaksOn:false,
+  breaks:[{qty:25,margin:null},{qty:50,margin:null},{qty:100,margin:null},{qty:250,margin:null}]
+};
+try{const s=localStorage.getItem('lg-est-quote'); if(s){const j=JSON.parse(s); if(j&&j.lines&&j.lines.length) Q={...Q,...j};}}catch(e){}
+if(!Q.breaks||!Q.breaks.length) Q.breaks=[{qty:25,margin:null},{qty:50,margin:null},{qty:100,margin:null},{qty:250,margin:null}];
+const saveQ=()=>{try{localStorage.setItem('lg-est-quote',JSON.stringify(Q));}catch(e){}};
+let sel=0, viewQty=null;
+
+/* ---------------- helpers ---------------- */
+const $=id=>document.getElementById(id);
+const money=n=>'$'+(Math.abs(n)>=1000?n.toLocaleString('en-US',{maximumFractionDigits:0}):n.toFixed(2));
+const m4=n=>'$'+(n<1?n.toFixed(3):n.toFixed(2));
+const f2=n=>n.toFixed(2);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------------- the model: one line = one standalone run ---------------- */
+function calcLine(L,qtyOverride){
+  const qRaw = qtyOverride!=null? qtyOverride : +L.qty;
+  if(!(+L.w>0)||!(+L.h>0)||!(qRaw>0)) return {empty:true,L,w:+L.w||0,h:+L.h||0,qty:+qRaw||0};
+  const w=Math.max(.05,+L.w), h=Math.max(.05,+L.h);
+  const qty=Math.max(1,Math.round(qRaw));
+  const two = L.con==='2'||L.con==='3';
+  const backed = L.con==='3';
+  const film = byId(FILMS_ALL(), two?Q.stock.film2:Q.stock.film1);
+  const olam = two? byId(OLAMS,'none') : byId(OLAMS_ALL(),Q.stock.olam1);
+  const adh  = two? byId(ADHS_ALL(),Q.stock.adh2) : byId(ADHS,'none');
+  const rig  = two? byId(RIGIDS_ALL(),Q.stock.rig2) : null;
+  const back = backed? byId(FILMS_ALL(),Q.stock.back2) : null;
+  const speed=+Q.stock.mode, cov=+Q.stock.cov, g=+P.gutter;
+  const warn=[], info=[];
+
+  const usable=Math.min(film.rollW-2*(+P.edge), +P.maxPrintW);
+  const acrossOf=pw=>Math.floor((usable+g)/(pw+g));
+  const a1=acrossOf(w), a2=acrossOf(h);
+  const rot=a2>a1, pw=rot?h:w, ph=rot?w:h, across=Math.max(a1,a2);
+  if(across<1) return {error:`${w}" × ${h}" will not fit a ${film.rollW}" roll with ${P.edge}" edges.`,L,w,h,qty};
+  const rows=Math.ceil(qty/across);
+  const runFt=(rows*(ph+g)+g)/12 + (+P.leadFt);
+  const webSqft=runFt*film.rollW/12;
+  const partSqft=qty*w*h/144;
+  const prodFt=(rows*(ph+g)+g)/12;              // run length before leader
+  const widthUse=(across*(pw+g)-g)/film.rollW;  // share of ROLL width the nest occupies
+  const printUse=(across*(pw+g)-g)/usable;      // share of PRINTABLE width used
+  const lengthUse=prodFt/runFt;                 // share of run length that is product
+  const yld=partSqft/webSqft;                   // overall material used; 1-yld is the waste factor
+
+  let sheets=0,perSheet=0,panels=0,splitK=1,sheetW=0,sheetH=0;
+  if(two&&rig){
+    sheetW=rig.shW; sheetH=rig.shH;
+    const uw=sheetW-2*P.sheetTrim, uh=sheetH-2*P.sheetTrim;
+    const fit=(a,b)=>Math.max(0,Math.floor((uw+g)/(a+g)))*Math.max(0,Math.floor((uh+g)/(b+g)));
+    perSheet=Math.max(fit(w,h),fit(h,w));
+    if(perSheet<1) return {error:`${w}" × ${h}" will not fit a ${sheetW}×${sheetH}" sheet.`,L,w,h,qty};
+    sheets=Math.ceil(qty/perSheet)+(+P.setupSh);
+    const fitsBed=(sheetW<=P.bedW&&sheetH<=P.bedH)||(sheetH<=P.bedW&&sheetW<=P.bedH);
+    if(!fitsBed){
+      splitK=Math.max(2,Math.ceil(Math.max(sheetW,sheetH)/(+P.bedW)));
+      warn.push(`The ${sheetW}×${sheetH}" sheet is larger than the ${P.bedW}×${P.bedH}" cutter bed, so it is trimmed into ${splitK} panels before die cutting.`);
+    }
+    panels=sheets*splitK;
+  } else {
+    perSheet=Math.max(1,Math.floor((P.bedH+g)/(ph+g)))*across;
+    panels=Math.ceil(qty/perSheet);
+  }
+
+  const mats=[], webW=film.rollW;
+  const rollLine=m=>{
+    const passes=Math.max(1,Math.ceil(webW/m.rollW));
+    const linFt=runFt*passes, perFt=m.cost/m.lenFt;
+    if(passes>1) warn.push(`${m.n} is ${m.rollW}" against a ${webW}" web — ${passes} passes, ${f2(linFt)} linear feet.`);
+    if(m.rollW>webW*1.4) info.push(`${m.n} is ${m.rollW}" over a ${webW}" nest — you pay the full roll width.`);
+    return {n:m.n,v:m.v,q:`${f2(linFt)} lin ft @ ${m.rollW}"`,u:m4(perFt)+'/lin ft',c:linFt*perFt,src:m.custom?'usr':'po'};
+  };
+  mats.push(rollLine(film));
+  if(olam.psf>0) mats.push(rollLine(olam));
+  if(backed&&back) mats.push(rollLine(back));
+  if(two&&adh.psf>0) mats.push(rollLine(adh));
+  if(two&&rig) mats.push({n:rig.n,v:rig.v,q:`${sheets} sheet${sheets===1?'':'s'} · ${perSheet} up`,u:m4(rig.cost)+'/sh',c:sheets*rig.cost,src:rig.custom?'usr':'po'});
+  const inkMl=partSqft*1.05*(+P.inkMl)*cov;
+  mats.push({n:'UltraChrome GS3 ink',v:'North Light Color · $216/cart',q:`${inkMl.toFixed(0)} ml @ ${Math.round(cov*100)}%`,u:m4(+P.inkCost)+'/ml',c:inkMl*P.inkCost,src:'po'});
+  // roll goods that never become product — computed for future reporting, not displayed:
+  // the material is resold at margin like any other, so a dollar figure reads as a loss when it isn't
+  const rollMats=mats.filter(m=>/lin ft/.test(m.q));
+  const rollCost=rollMats.reduce((s,m)=>s+m.c,0);
+  const perSqftPaid = webSqft? rollCost/webSqft : 0;
+  const wasteCost = rollCost - partSqft*perSqftPaid;
+  const matSub=mats.reduce((s,m)=>s+m.c,0);
+  const spoilC=matSub*(+P.spoil)/100;
+  const matTotal=matSub+spoilC;
+
+  const ops=[];
+  const add=(n,mh,lh,rate,role,fx)=>{
+    const lr=rateOf(role), who=crewOf(role);
+    ops.push({n,mh,lh,c:mh*rate+lh*lr,fx,who:who.n,lr});
+  };
+  const artHr=L.art==='new'?+P.artNew:+P.artRep;
+  add('Prepress / artwork',0,artHr,0,'opArt',`${L.art==='new'?'new graphic':'repeat'} → ${f2(artHr)} hr`);
+  add('Screen prep',0,0,0,'opArt','digital route — no screens, 0 hr');
+  const printRun=webSqft/speed;
+  add('Print — Epson S80600',(+P.printSetup)+printRun,(+P.printSetup)+printRun*(+P.printAtt),machRate('press'),'opPrint',
+      `${f2(webSqft)} ft² ÷ ${speed} ft²/hr + ${f2(+P.printSetup)} setup`);
+  const passHr=()=> (+P.lamSetup)+(runFt/(+P.lamFtMin)/60);
+  const passFx=()=>`${f2(+P.lamSetup)} setup + ${f2(runFt)} ft ÷ ${P.lamFtMin} ft/min`;
+  if(olam.psf>0){
+    const m=P.mOverlam, hr=passHr();
+    add(`Overlaminate — ${machName(m)}`,hr,hr,machRate(m),'opLam',passFx());
+  }
+  if(backed&&back){
+    const m=P.mOverlam, hr=passHr();
+    add(`Backer vinyl — ${machName(m)}`,hr,hr,machRate(m),'opLam',passFx());
+  }
+  if(two&&adh.psf>0){
+    const m=P.mAdhesive, hr=passHr();
+    add(`Adhesive — ${machName(m)}`,hr,hr,machRate(m),'opLam',passFx());
+  }
+  if(two&&rig){
+    const m=P.mMount, hr=sheets*(+P.mountMin)/60;
+    add(`Mount to substrate — ${machName(m)}`,hr,hr,machRate(m),'opMount',
+        `${sheets} sheets × ${P.mountMin} min — machine time, not just handling`);
+  }
+  if(splitK>1) add('Pre-cut to cutter bed',+P.precutHr,+P.precutHr,machRate('cut'),'opPrecut',`flat ${f2(+P.precutHr)} hr — sheet exceeds bed`);
+  const passes=L.dcut==='through'?(+P.passThru):1;
+  const cutSetup=L.dcut==='through'?(+P.setupThru):(+P.setupKiss);
+  const pathIn=qty*2*(w+h)*(+P.pathFac)*passes;
+  const cutRun=pathIn/((+P.cutIps)*3600)/(+P.cutEff);
+  const loadHr=panels*(+P.loadMin)/60;
+  add(`Die cut — ${L.dcut==='through'?'through':'kiss'}`,cutSetup+cutRun+loadHr,cutSetup+loadHr+cutRun*(+P.cutAtt),machRate('cut'),'opCut',
+      `${(pathIn/12).toFixed(0)} ft path ÷ (${P.cutIps} in/s × ${P.cutEff}) + ${panels} panel loads + ${f2(cutSetup)} setup`);
+  add('Weed &amp; inspect',0,qty*(+P.weedSec)/3600,0,'opWeed',`${qty} × ${P.weedSec} sec`);
+
+  const mh=ops.reduce((s,o)=>s+o.mh,0), lh=ops.reduce((s,o)=>s+o.lh,0);
+  const conv=ops.reduce((s,o)=>s+o.c,0);
+  if(yld<0.45) info.push(`${((1-yld)*100).toFixed(0)}% of the film is waste on this line. ${(printUse*100).toFixed(0)}% of the ${usable}" printable width is used, and a ${P.leadFt} ft leader sits on ${f2(prodFt)} ft of product.`);
+  if(printUse>0.9 && film.rollW>usable+4) info.push(`The nest fills the ${usable}" print width, but you buy ${film.rollW}" film and pay for all of it — ${((1-widthUse)*100).toFixed(0)}% of the roll width is never printed.`);
+  return {L,w,h,qty,two,backed,across,rot,rows,runFt,prodFt,webSqft,partSqft,yld,widthUse,printUse,lengthUse,usable,perSheet,sheets,panels,splitK,sheetW,sheetH,
+          mats,matSub,spoilC,matTotal,wasteCost,rollCost,ops,mh,lh,conv,base:matTotal+conv,film,rig,pw,ph,warn,info};
+}
+
+function quote(qtyOverride,marginPct){
+  const mg = marginPct==null? (+P.margin) : marginPct;
+  const res=Q.lines.map(L=>calcLine(L,qtyOverride));
+  const good=res.filter(r=>!r.error&&!r.empty);
+  const pcsReal=good.reduce((s,r)=>s+r.qty,0);
+  const pcs=pcsReal||1;
+  const shipHr=+P.shipHr, shipC=shipHr*rateOf('opShip');
+  good.forEach(r=>{
+    r.shipHr=shipHr*(r.qty/pcs);
+    r.total=r.base+shipC*(r.qty/pcs);
+    r.unit=r.total/r.qty;
+    r.price=r.unit/(1-mg/100);
+    r.ext=r.price*r.qty;
+  });
+  return {mg,res,good,pcs,pcsReal,shipHr,shipC,
+    mat:good.reduce((s,r)=>s+r.matTotal,0),
+    conv:good.reduce((s,r)=>s+r.conv,0)+shipC,
+    mh:good.reduce((s,r)=>s+r.mh,0),
+    lh:good.reduce((s,r)=>s+r.lh,0)+shipHr,
+    total:good.reduce((s,r)=>s+r.total,0),
+    price:good.reduce((s,r)=>s+r.ext,0)};
+}
+
+/* ---------------- quantity breaks ---------------- */
+// Each break is a full independent re-run: imposition, sheets and panels are all
+// recomputed. Never interpolate — the cost curve is a staircase and it steps UP
+// whenever one more piece forces another row on the web or another sheet.
+function breakQuotes(){
+  return Q.breaks.map(b=>({b, q:quote(+b.qty||1, b.margin==null?null:+b.margin)}));
+}
+// Nearest quantity above this one that fills the last row (and last sheet, if rigid).
+function betterQty(L,qty){
+  const r=calcLine(L,qty); if(r.error||r.empty) return null;
+  const cands=new Set();
+  const up=n=>Math.ceil(qty/n)*n;
+  if(r.across>1) cands.add(up(r.across));
+  if(r.two&&r.perSheet>1) cands.add(up(r.perSheet));
+  let best=null;
+  cands.forEach(c=>{
+    if(c<=qty||c>qty*1.35) return;
+    const alt=calcLine(L,c); if(alt.error||alt.empty) return;
+    const unit=r.base/qty, altUnit=alt.base/c;
+    if(altUnit < unit*0.995 && (!best||altUnit<best.unit)) best={qty:c,unit:altUnit,save:(1-altUnit/unit)*100};
+  });
+  return best;
+}
+
+function renderBreaks(){
+  $('breaksBody').hidden = !Q.breaksOn;
+  $('breaksOn').checked = !!Q.breaksOn;
+  if(!Q.breaksOn) return;
+  const bq=breakQuotes();
+  const view=Q.breakView||'sell';
+  const T=$('breakTable');
+
+  T.querySelector('thead').innerHTML =
+    `<tr><th style="min-width:190px">Part</th>`+
+    Q.breaks.map((b,j)=>`<th class="num qh">
+        <input class="qty" data-b="${j}" data-f="qty" type="text" inputmode="numeric" value="${esc(b.qty)}" aria-label="Break ${j+1} quantity">
+        ${Q.breaks.length>1?`<button class="xq" data-rm="${j}" aria-label="Remove this quantity">×</button>`:''}
+      </th>`).join('')+`</tr>`+
+    `<tr><th style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">Margin — blank uses ${P.margin}%</th>`+
+    Q.breaks.map((b,j)=>`<th class="num qh"><input class="mg" data-b="${j}" data-f="margin" type="text" inputmode="decimal" value="${b.margin==null?'':esc(b.margin)}" placeholder="${P.margin}" aria-label="Break ${j+1} margin"></th>`).join('')+`</tr>`;
+
+  T.querySelector('tbody').innerHTML = Q.lines.map((L,i)=>{
+    const cells=bq.map(({q},j)=>{
+      const r=q.res[i];
+      if(!r||r.error||r.empty) return `<td class="num">—</td>`;
+      const val = view==='sell'? m4(r.price) : view==='ext'? money(r.ext) : m4(r.unit);
+      const bt = betterQty(L,+Q.breaks[j].qty||1);
+      const on = i===sel && viewQty===(+Q.breaks[j].qty||1);
+      let hint='';
+      if(bt){
+        const sellPc = bt.unit/(1-q.mg/100);                     // same measure as the cell
+        const shown = view==='sell'? m4(sellPc) : view==='ext'? money(sellPc*bt.qty) : m4(bt.unit);
+        hint=`<span class="better">${bt.qty} → ${shown} (−${bt.save.toFixed(0)}%)</span>`;
+      }
+      return `<td class="num cell${on?' on':''}" data-i="${i}" data-q="${+Q.breaks[j].qty||1}">${val}${hint}</td>`;
+    }).join('');
+    return `<tr><td class="op">${i+1}. ${esc(L.desc||'(unnamed)')}<span class="fx">${L.w&&L.h?`${L.w}×${L.h}"`:'no size yet'} · ${L.con==='1'?'decal':L.con==='3'?'4-layer':'2-surface'}</span></td>${cells}</tr>`;
+  }).join('');
+
+  const anyMulti = Q.lines.length>1;
+  T.querySelector('tfoot').innerHTML =
+    `<tr class="tot"><td>${anyMulti?'All lines at this quantity each':'Quote'}</td>`+
+    bq.map(({q})=>`<td class="num">${q.pcsReal?money(view==='cost'?q.total:q.price):'—'}</td>`).join('')+`</tr>`;
+
+  const notes=[];
+  if(anyMulti) notes.push(`The total row prices <b>every line</b> at that quantity. If the customer wants a different mix, read the line rows and ignore the total.`);
+  const anyBetter = Q.lines.some(L=>Q.breaks.some(b=>betterQty(L,+b.qty||1)));
+  if(anyBetter) notes.push(`Green figures are quantities that fill the last row or sheet. A part that nests 3 across wastes film at 25 and fills it at 27 — the customer gets more pieces for less per piece.`);
+  $('breakNotes').innerHTML = notes.map(t=>`<div class="note i">${t}</div>`).join('');
+}
+
+/* ---------------- nest drawings ---------------- */
+function rollSvg(r,W,maxRows,mini){
+  const webW=r.film.rollW, scale=W/webW, showRows=Math.min(r.rows,maxRows);
+  const rowH=(r.ph+ +P.gutter)*scale;
+  const H=Math.max(mini?26:60, Math.min(showRows*rowH+ +P.gutter*scale, mini?86:300));
+  const lab=mini?0:22;
+  let s=`<svg width="${W}" height="${H+lab}" viewBox="0 0 ${W} ${H+lab}" role="img" aria-label="${r.across} across on a ${webW} inch web">`;
+  s+=`<rect x="0" y="0" width="${W}" height="${H}" fill="var(--panel-2)" stroke="var(--rule-2)"/>`;
+  const em=P.edge*scale, g=P.gutter*scale;
+  for(let row=0;row<showRows;row++) for(let i=0;i<r.across;i++){
+    const x=em+i*((r.pw+ +P.gutter)*scale), y=g+row*rowH;
+    if(y+r.ph*scale>H) break;
+    s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${Math.max(0.6,r.pw*scale).toFixed(1)}" height="${(r.ph*scale).toFixed(1)}" fill="var(--accent)" fill-opacity=".82" stroke="var(--paper)" stroke-width="${mini?0.5:1.5}" rx="1"/>`;
+  }
+  s+=`<line x1="${em}" y1="0" x2="${em}" y2="${H}" stroke="var(--flag)" stroke-dasharray="3 3"/>`;
+  s+=`<line x1="${W-em}" y1="0" x2="${W-em}" y2="${H}" stroke="var(--flag)" stroke-dasharray="3 3"/>`;
+  if(!mini){
+    s+=`<text x="0" y="${H+16}" font-family="var(--mono)" font-size="11" fill="var(--muted)">${webW}" web</text>`;
+    s+=`<text x="${W}" y="${H+16}" text-anchor="end" font-family="var(--mono)" font-size="11" fill="var(--muted)">${r.rows>showRows?`showing ${showRows} of ${r.rows} rows`:`${r.rows} row${r.rows===1?'':'s'}`}</text>`;
+  }
+  return s+'</svg>';
+}
+const nestRoll=r=>rollSvg(r,520,9,false);
+const wClass=w=>w>70?'y-bad':w>50?'y-warn':'y-ok';   // w = film waste %; lower is better
+
+function nestSheet(r){
+  if(!r.two||!r.rig) return '';
+  const MAXH=330, sc=Math.min(380/r.sheetW,MAXH/r.sheetH), W=r.sheetW*sc, H=r.sheetH*sc;
+  const g=+P.gutter, t=+P.sheetTrim, uw=r.sheetW-2*t, uh=r.sheetH-2*t;
+  const fit=(a,b)=>[Math.max(0,Math.floor((uw+g)/(a+g))),Math.max(0,Math.floor((uh+g)/(b+g)))];
+  const A=fit(r.w,r.h), B=fit(r.h,r.w), useB=B[0]*B[1]>A[0]*A[1];
+  const cw=useB?r.h:r.w, ch=useB?r.w:r.h, nx=useB?B[0]:A[0], ny=useB?B[1]:A[1];
+  let s=`<svg width="${W}" height="${H+22}" viewBox="0 0 ${W} ${H+22}" role="img" aria-label="Parts nested on the substrate sheet">`;
+  s+=`<rect x="0" y="0" width="${W}" height="${H}" fill="var(--panel-2)" stroke="var(--rule-2)"/>`;
+  for(let y=0;y<ny;y++) for(let x=0;x<nx;x++)
+    s+=`<rect x="${(t*sc+x*(cw+g)*sc).toFixed(1)}" y="${(t*sc+y*(ch+g)*sc).toFixed(1)}" width="${(cw*sc).toFixed(1)}" height="${(ch*sc).toFixed(1)}" fill="var(--accent)" fill-opacity=".82" stroke="var(--paper)" stroke-width="1.5" rx="1"/>`;
+  for(let k=1;k<r.splitK;k++){
+    const y=(r.sheetH/r.splitK)*k*sc;
+    s+=`<line x1="0" y1="${y.toFixed(1)}" x2="${W}" y2="${y.toFixed(1)}" stroke="var(--flag)" stroke-width="2" stroke-dasharray="6 4"/>`;
+  }
+  s+=`<text x="0" y="${H+16}" font-family="var(--mono)" font-size="11" fill="var(--muted)">${r.sheetW}×${r.sheetH}" · ${nx*ny} up</text>`;
+  if(r.splitK>1) s+=`<text x="${W}" y="${H+16}" text-anchor="end" font-family="var(--mono)" font-size="11" fill="var(--flag)">trim into ${r.splitK}</text>`;
+  return s+'</svg>';
+}
+
+/* ---------------- selects ---------------- */
+const fillSel=(el,arr,v)=>el.innerHTML=arr.map(m=>`<option value="${m.id}"${m.id===v?' selected':''}>${esc(m.n)}${m.custom?' — yours':''}</option>`).join('')
+  +`<option value="__new">＋ Add a material not listed…</option>`;
+const SLOTS=[['film2',FILMS_ALL,'roll'],['adh2',ADHS_ALL,'roll'],['rig2',RIGIDS_ALL,'sheet'],
+             ['back2',FILMS_ALL,'roll'],['film1',FILMS_ALL,'roll'],['olam1',OLAMS_ALL,'roll']];
+function fillAllSel(){ SLOTS.forEach(([id,fn])=>fillSel($(id),fn(),Q.stock[id])); }
+fillAllSel();
+$('mode').value=Q.stock.mode; $('cov').value=Q.stock.cov; $('marg').value=P.margin;
+['co','contact','quote','date','job'].forEach(k=>{
+  const el=$('c'+k[0].toUpperCase()+k.slice(1)); el.value=Q.cust[k]||'';
+  el.addEventListener('input',()=>{Q.cust[k]=el.value; saveQ(); renderMeta();});
+});
+['film2','adh2','rig2','back2','film1','olam1','mode','cov'].forEach(k=>{
+  $(k).addEventListener('change',()=>{ if($(k).value==='__new') return; Q.stock[k]=$(k).value; saveQ(); render();});
+});
+$('marg').addEventListener('input',()=>{const v=parseFloat($('marg').value); if(!isNaN(v)&&v<100){P.margin=v; saveP(); const pi=$('p_margin'); if(pi)pi.value=v; render();}});
+
+/* ---------------- custom materials ---------------- */
+let matTarget=null;   // {slot, kind}
+const mMode=()=>[...$('mCostMode').children].find(b=>b.getAttribute('aria-pressed')==='true').dataset.v;
+
+function openMatForm(slot,kind){
+  matTarget={slot,kind};
+  $('matForm').hidden=false;
+  $('matFormTitle').textContent = kind==='sheet'? 'New sheet material' : 'New roll material';
+  $('mRollDims').hidden = kind==='sheet';
+  $('mSheetDims').hidden = kind!=='sheet';
+  $('mCostMode').children[1].textContent = kind==='sheet'? 'Per sheet' : 'Per roll';
+  ['mName','mW','mL','mSW','mSH','mCost'].forEach(id=>$(id).value='');
+  matDerived(); $('mName').focus();
+}
+function closeMatForm(){ matTarget=null; $('matForm').hidden=true; fillAllSel(); }
+
+function matNumbers(){
+  const kind=matTarget?matTarget.kind:'roll';
+  const cost=parseFloat($('mCost').value)||0;
+  if(kind==='sheet'){
+    const w=parseFloat($('mSW').value)||0, hh=parseFloat($('mSH').value)||0;
+    const sqft=w*hh/144;
+    if(!sqft||!cost) return null;
+    const perSheet = mMode()==='sqft'? cost*sqft : cost;
+    return {kind,shW:w,shH:hh,sqft,cost:perSheet,psf:perSheet/sqft};
+  }
+  const w=parseFloat($('mW').value)||0, len=parseFloat($('mL').value)||0;
+  const sqft=(w/12)*len;
+  if(!sqft||!cost) return null;
+  const perRoll = mMode()==='sqft'? cost*sqft : cost;
+  return {kind,rollW:w,lenFt:len,sqft,cost:perRoll,psf:perRoll/sqft,perFt:perRoll/len};
+}
+function matDerived(){
+  const n=matNumbers();
+  if(!n){ $('mDerived').textContent='Fill in the size and a cost to see the rest.'; return; }
+  $('mDerived').innerHTML = n.kind==='sheet'
+    ? `${n.sqft.toFixed(2)} ft² a sheet · <b>${m4(n.cost)}</b> per sheet · <b>${m4(n.psf)}</b> per ft²`
+    : `${n.sqft.toFixed(0)} ft² on the roll · <b>${m4(n.cost)}</b> per roll · <b>${m4(n.perFt)}</b> per linear foot · ${m4(n.psf)} per ft²`;
+}
+['mW','mL','mSW','mSH','mCost'].forEach(id=>$(id).addEventListener('input',matDerived));
+$('mCostMode').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  [...$('mCostMode').children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  $('mCostLab').textContent = b.dataset.v==='sqft' ? 'Dollars per sq ft'
+    : (matTarget&&matTarget.kind==='sheet' ? 'Dollars per sheet' : 'Dollars per roll');
+  matDerived();
+});
+$('mCancel').addEventListener('click',closeMatForm);
+$('matForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const n=matNumbers();
+  if(!n){ $('mDerived').innerHTML='<span style="color:var(--flag)">Needs a size and a cost before it can be saved.</span>'; return; }
+  const name=$('mName').value.trim()|| (n.kind==='sheet'?`Custom sheet ${n.shW}×${n.shH}"`:`Custom roll ${n.rollW}"`);
+  const m={id:'c'+uid(), n:name, v:'entered by you', custom:true, ...n};
+  CUSTOM.push(m); saveCustom();
+  if(matTarget){ Q.stock[matTarget.slot]=m.id; saveQ(); }
+  closeMatForm(); renderCustomList(); render();
+});
+SLOTS.forEach(([id,fn,kind])=>{
+  $(id).addEventListener('change',()=>{
+    if($(id).value==='__new'){ $(id).value=Q.stock[id]; openMatForm(id,kind); }
+  });
+});
+function renderCustomList(){
+  const el=$('customList');
+  if(!CUSTOM.length){ el.innerHTML='<div class="hint">None yet. Pick “Add a material not listed” in any dropdown above.</div>'; return; }
+  el.innerHTML=CUSTOM.map(m=>`<div class="cust-row"><b>${esc(m.n)}</b>
+      <span>${m.kind==='sheet'?`${m.shW}×${m.shH}" · ${m4(m.cost)}/sh`:`${m.rollW}"×${m.lenFt}ft · ${m4(m.cost/m.lenFt)}/ft`}
+      <button class="xq" data-del="${m.id}" aria-label="Remove ${esc(m.n)}">×</button></span></div>`).join('');
+}
+$('customList').addEventListener('click',e=>{
+  const id=e.target.dataset.del; if(!id) return;
+  if(Object.values(Q.stock).includes(id)){ window.alert('That material is in use on this quote. Switch the dropdown to something else first.'); return; }
+  CUSTOM=CUSTOM.filter(m=>m.id!==id); saveCustom(); renderCustomList(); fillAllSel(); render();
+});
+renderCustomList();
+
+/* ---------------- line editing ---------------- */
+$('addLine').addEventListener('click',()=>{
+  Q.lines.push(blankLine());
+  sel=Q.lines.length-1; saveQ(); buildLines(); render();
+});
+$('dupLine').addEventListener('click',()=>{
+  const s=Q.lines[sel]; if(!s) return;
+  Q.lines.splice(sel+1,0,{...s,id:uid(),desc:s.desc+' (copy)'}); sel=sel+1; saveQ(); buildLines(); render();
+});
+$('newEst').addEventListener('click',()=>{
+  if(!confirmClear()) return;
+  Q.cust={co:'',contact:'',quote:'',date:new Date().toISOString().slice(0,10),job:''};
+  Q.lines=[blankLine()]; sel=0; viewQty=null;
+  ['co','contact','quote','date','job'].forEach(k=>{ $('c'+k[0].toUpperCase()+k.slice(1)).value=Q.cust[k]||''; });
+  saveQ(); buildLines(); render();
+  $('cCo').focus();
+});
+function confirmClear(){
+  const touched = Q.cust.co || Q.lines.length>1 || Q.lines[0].desc!=='';
+  return !touched || window.confirm('Clear the customer details and all lines and start a new estimate?');
+}
+const tb=$('lineTable');
+tb.addEventListener('input',e=>{
+  const tr=e.target.closest('tr'); const f=e.target.dataset.f;
+  if(!tr||!f) return;
+  Q.lines[+tr.dataset.i][f]=e.target.value;
+  if(+tr.dataset.i!==sel) sel=+tr.dataset.i;
+  saveQ(); render();
+});
+tb.addEventListener('change',e=>{
+  const tr=e.target.closest('tr'); const f=e.target.dataset.f;
+  if(!tr||!f) return;
+  Q.lines[+tr.dataset.i][f]=e.target.value; saveQ(); render();
+});
+tb.addEventListener('blur',e=>{                       // tidy typed numbers on exit
+  const f=e.target.dataset.f;
+  if(!f||!['w','h','qty'].includes(f)) return;
+  const tr=e.target.closest('tr'); const v=parseFloat(e.target.value);
+  const clean = isNaN(v)? (f==='qty'?1:1) : (f==='qty'? Math.max(1,Math.round(v)) : Math.round(Math.max(0.05,v)*1000)/1000);
+  e.target.value=clean; Q.lines[+tr.dataset.i][f]=clean; saveQ(); render();
+},true);
+tb.addEventListener('click',e=>{
+  const tr=e.target.closest('tr'); if(!tr||tr.dataset.i==null) return;
+  if(e.target.classList.contains('xbtn')){
+    if(Q.lines.length>1){ Q.lines.splice(+tr.dataset.i,1); sel=Math.min(sel,Q.lines.length-1); saveQ(); buildLines(); render(); }
+    return;
+  }
+  if(+tr.dataset.i!==sel){ sel=+tr.dataset.i; render(); }
+});
+
+$('breaksOn').addEventListener('change',()=>{ Q.breaksOn=$('breaksOn').checked; if(!Q.breaksOn) viewQty=null; saveQ(); render(); });
+$('breakView').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  Q.breakView=b.dataset.v;
+  [...$('breakView').children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  saveQ(); render();
+});
+$('addBreak').addEventListener('click',()=>{
+  const last=Q.breaks[Q.breaks.length-1];
+  Q.breaks.push({qty:Math.max(1,Math.round((+last?.qty||100)*2)),margin:null}); saveQ(); render();
+});
+$('breakTable').addEventListener('input',e=>{
+  const j=e.target.dataset.b, f=e.target.dataset.f; if(j==null||!f) return;
+  const v=e.target.value.trim();
+  Q.breaks[+j][f] = f==='margin' ? (v===''?null:Math.min(95,Math.max(0,parseFloat(v)||0))) : (parseInt(v,10)||'');
+  saveQ(); render();
+});
+$('breakTable').addEventListener('click',e=>{
+  const rm=e.target.dataset.rm;
+  if(rm!=null){ if(Q.breaks.length>1){Q.breaks.splice(+rm,1); saveQ(); render();} return; }
+  const td=e.target.closest('td.cell'); if(!td) return;
+  sel=+td.dataset.i; viewQty=+td.dataset.q; render();
+});
+
+/* ---------------- rates panel ---------------- */
+function buildRates(){
+  const groups=[...new Set(PARAMS.map(p=>p.g))];
+  $('rgrid').innerHTML=groups.map(g=>`<div class="rgroup"><h3>${g}</h3>`+
+    PARAMS.filter(p=>p.g===g).map(p=>{
+      const [txt,cls]=SRC[p.s];
+      if(p.type==='mach'){
+        return `<div class="p"><label for="p_${p.k}">${p.l}</label><select id="p_${p.k}" data-k="${p.k}" style="width:100%;font-size:11.5px;padding:4px 20px 4px 5px">`+
+          MACH.filter(m=>m.k!=='press'&&m.k!=='cut').map(m=>`<option value="${m.k}"${P[p.k]===m.k?' selected':''}>${m.n}</option>`).join('')+`</select></div>`;
+      }
+      if(p.type==='sel'){
+        return `<div class="p"><label for="p_${p.k}">${p.l}</label><select id="p_${p.k}" data-k="${p.k}" style="width:100%;font-size:11.5px;padding:4px 20px 4px 5px">`+
+          CREW.map(c=>`<option value="${c.id}"${P[p.k]===c.id?' selected':''}>${c.n} · $${(+P['w_'+c.id]||c.w).toFixed(2)}</option>`).join('')+`</select></div>`;
+      }
+      return `<div class="p"><label for="p_${p.k}">${p.l} <span class="tag ${cls}">${txt}</span></label><input id="p_${p.k}" type="number" step="any" value="${P[p.k]}" data-k="${p.k}"></div>`;
+    }).join('')+(g==='Machine cost rates'?'<div id="machOut" class="machout"></div>':'')+'</div>').join('');
+  renderMach();
+}
+function renderMach(){
+  const el=document.getElementById('machOut'); if(!el) return;
+  const alt=[+P.util,1000,600];
+  el.innerHTML=`<table style="margin-top:10px"><thead><tr><th>Per machine hour</th><th class="num">Capital</th><th class="num">Service</th><th class="num">Power</th><th class="num">Rate</th></tr></thead><tbody>`+
+    MACH.map(m=>{const p=machParts(m.k);
+      return `<tr><td class="op">${m.n}<span class="fx">${m.sub} · ${money(+P['cap_'+m.k])} ÷ ${P['life_'+m.k]} yr</span></td><td class="num">${m4(p.cap)}</td><td class="num">${m4(p.svc)}</td><td class="num">${m4(p.pwr)}</td><td class="num" style="font-weight:600;color:var(--accent-deep)">${m4(p.tot)}</td></tr>`;
+    }).join('')+`</tbody></table>
+    <div class="hint" style="margin-top:10px">Utilization sets these rates. The same machines at lower productive hours:</div>
+    <table style="margin-top:5px"><thead><tr><th>At</th>${MACH.map(m=>`<th class="num">${m.n.split(' ')[0]}</th>`).join('')}</tr></thead><tbody>`+
+    alt.map(hz=>`<tr><td class="num" style="text-align:left">${hz.toLocaleString()} hr/yr</td>`+
+      MACH.map(m=>`<td class="num"${hz===+P.util?' style="font-weight:600;color:var(--accent-deep)"':''}>${m4(machParts(m.k,hz).tot)}</td>`).join('')+`</tr>`).join('')+
+    `</tbody></table>`;
+}
+buildRates();
+$('rgrid').addEventListener('input',e=>{
+  const k=e.target.dataset.k; if(!k) return;
+  if(e.target.tagName==='SELECT'){P[k]=e.target.value; saveP(); renderMach(); render(); return;}
+  const v=parseFloat(e.target.value); if(!isNaN(v)){P[k]=v; saveP(); if(k==='margin')$('marg').value=v; renderMach(); render();}
+});
+$('rgrid').addEventListener('change',e=>{
+  const k=e.target.dataset.k;
+  if(k&&e.target.tagName==='SELECT'){P[k]=e.target.value; saveP(); render();}
+});
+$('reset').addEventListener('click',()=>{P={...DEF}; saveP(); buildRates(); $('marg').value=P.margin; render();});
+
+/* ---------------- render ---------------- */
+function renderMeta(){
+  const c=Q.cust;
+  $('qMeta').textContent=[c.co||'no customer', c.quote||'no quote #', c.date].filter(Boolean).join(' · ');
+}
+function lineRowHtml(L,i){
+  const dim=(f,v,w)=>`<input data-f="${f}" type="text" inputmode="decimal" value="${esc(v)}" style="width:${w}px;text-align:right" aria-label="${f==='w'?'Width':f==='h'?'Height':'Quantity'}">`;
+  return `<tr data-i="${i}">
+    <td class="lineno">${i+1}</td>
+    <td><input data-f="desc" value="${esc(L.desc)}" aria-label="Line ${i+1} description"></td>
+    <td class="num">${dim('w',L.w,70)}</td>
+    <td class="num">${dim('h',L.h,70)}</td>
+    <td class="num">${dim('qty',L.qty,62)}</td>
+    <td><select data-f="con" aria-label="Construction">
+      <option value="1"${L.con==='1'?' selected':''}>1-surface decal</option>
+      <option value="2"${L.con==='2'?' selected':''}>2-surface rigid</option>
+      <option value="3"${L.con==='3'?' selected':''}>4-layer + backer</option>
+    </select></td>
+    <td><select data-f="dcut" aria-label="Die cut">
+      <option value="through"${L.dcut==='through'?' selected':''}>Through</option>
+      <option value="kiss"${L.dcut==='kiss'?' selected':''}>Kiss</option>
+    </select></td>
+    <td><select data-f="art" aria-label="Artwork">
+      <option value="new"${L.art==='new'?' selected':''}>New</option>
+      <option value="repeat"${L.art==='repeat'?' selected':''}>Repeat</option>
+    </select></td>
+    <td class="num calc">—</td>
+    <td class="num calc" style="color:var(--accent-deep);font-weight:600">—</td>
+    <td class="num calc" style="font-weight:600">—</td>
+    <td><button class="xbtn" aria-label="Remove line ${i+1}">×</button></td>
+  </tr>`;
+}
+function buildLines(){
+  $('lineTable').querySelector('tbody').innerHTML = Q.lines.map(lineRowHtml).join('');
+}
+function paintLines(q){
+  const tb=$('lineTable').querySelector('tbody');
+  Q.lines.forEach((L,i)=>{
+    const tr=tb.querySelector(`tr[data-i="${i}"]`); if(!tr) return;
+    tr.classList.toggle('sel', i===sel);
+    const r=q.res[i], bad=!r||r.error||r.empty, c=tr.querySelectorAll('td.calc');
+    c[0].textContent=bad?'—':m4(r.unit);
+    c[1].textContent=bad?'—':m4(r.price);
+    c[2].textContent=bad?'—':money(r.ext);
+    tr.title = (r&&r.error)||'';
+  });
+}
+
+function render(){
+  const q=quote();
+  renderMeta();
+  paintLines(q);
+  renderBreaks();
+
+  const totalPcs=q.pcsReal;
+  $('linesMeta').textContent=`${Q.lines.length} line${Q.lines.length===1?'':'s'} · ${totalPcs} piece${totalPcs===1?'':'s'}`;
+  $('resTag').textContent=totalPcs?`${totalPcs} pcs`:'nothing priced yet';
+
+  // totals
+  $('quotePrice').innerHTML=`<small>$</small>${q.price.toLocaleString('en-US',{maximumFractionDigits:0})}`;
+  $('quoteSub').textContent=totalPcs?`${money(q.total)} cost · ${money(q.price-q.total)} gross`:'Enter a size and quantity to price a line.';
+  $('sMat').textContent=money(q.mat); $('sMatPct').textContent=q.total?`${(q.mat/q.total*100).toFixed(0)}% of cost`:'—';
+  $('sLab').textContent=money(q.conv); $('sLabPct').textContent=q.total?`${(q.conv/q.total*100).toFixed(0)}% of cost`:'—';
+  $('sMh').textContent=f2(q.mh); $('sLh').textContent=f2(q.lh);
+
+  $('priceTable').innerHTML=
+    `<tr><td>Total cost</td><td class="num">${money(q.total)}</td></tr>
+     <tr><td>Sell at ${P.margin}% margin</td><td class="num" style="color:var(--accent-deep);font-weight:600">${money(q.price)}</td></tr>
+     <tr><td>Average sell per piece</td><td class="num">${totalPcs?m4(q.price/totalPcs):'—'}</td></tr>
+     <tr><td>Pack &amp; ship <span class="tag t-leg">once per quote</span></td><td class="num">${f2(q.shipHr)} hr</td></tr>
+     <tr><td>Wage burden <span class="tag t-pay">payroll</span></td><td class="num">${P.burden}%</td></tr>
+     <tr><td colspan="2" class="hint" style="padding-top:9px;border-bottom:0">Every line carries its own press, laminator and cutter setup — no ganging assumed. Direct conversion cost only; no facility overhead, admin or freight.</td></tr>`;
+
+  $('byLine').querySelector('tbody').innerHTML=q.res.map((r,i)=>{
+    if(r.empty) return `<tr><td style="color:var(--muted)">${i+1}. ${esc(r.L.desc||'(empty line)')}<span class="fx">waiting on size and quantity</span></td><td class="num">—</td></tr>`;
+    if(r.error) return `<tr><td>${i+1}. ${esc(r.L.desc)}<span class="fx" style="color:var(--flag)">${esc(r.error)}</span></td><td class="num">—</td></tr>`;
+    return `<tr><td>${i+1}. ${esc(r.L.desc)}<span class="fx">${r.qty} pcs · ${f2(r.runFt)} ft · ${f2(r.mh)} mach hr</span></td><td class="num">${money(r.ext)}</td></tr>`;
+  }).join('')+`<tr class="tot"><td>Quote</td><td class="num">${money(q.price)}</td></tr>`;
+
+  // roll imposition, every line
+  $('nestStrip').innerHTML=q.res.map((r,i)=>{
+    const on=i===sel;
+    if(r.empty) return `<button class="mini${on?' on':''}" data-i="${i}" role="tab" aria-selected="${on}"><b>${i+1}. ${esc(r.L.desc||'(empty line)')}</b><span class="mini-m">size and quantity needed</span></button>`;
+    if(r.error) return `<button class="mini${on?' on':''}" data-i="${i}" role="tab" aria-selected="${on}"><b>${i+1}. ${esc(r.L.desc)}</b><span class="mini-bad">${esc(r.error)}</span></button>`;
+    const y=r.yld*100;
+    return `<button class="mini${on?' on':''}" data-i="${i}" role="tab" aria-selected="${on}">
+      <b>${i+1}. ${esc(r.L.desc)}</b>
+      <div class="mini-svg">${rollSvg(r,138,5,true)}</div>
+      <span class="mini-m">${r.w}×${r.h}" · ${r.qty} pcs</span>
+      <span class="mini-m">${r.across} across × ${r.rows} row${r.rows===1?'':'s'} · ${f2(r.runFt)} ft</span>
+      <span class="mini-m">${(r.printUse*100).toFixed(0)}% of print width</span>
+      <span class="mini-y ${wClass(100-y)}">${(100-y).toFixed(0)}% film waste</span>
+    </button>`;
+  }).join('');
+
+  // detail for the selected line — at the break quantity if one was clicked
+  const r = viewQty!=null ? calcLine(Q.lines[sel],viewQty) : q.res[sel];
+  if(r&&!r.error&&!r.empty&&viewQty!=null){ r.shipHr=0; r.total=r.base; r.unit=r.base/r.qty; }
+  if(!r||r.error||r.empty){
+    $('buildTag').textContent=r&&r.error?'cannot estimate':'';
+    $('nestRoll').innerHTML=''; $('nestSheet').innerHTML='';
+    $('nestRollP').textContent='—'; $('nestSheetP').textContent='—';
+    $('matTable').querySelector('tbody').innerHTML='';
+    $('opTable').querySelector('tbody').innerHTML='';
+    $('notes').innerHTML=r&&r.error?`<div class="note">${esc(r.error)}</div>`:'';
+    $('nestRollP').textContent = r&&r.empty ? 'Enter a size and quantity on this line.' : '—';
+    $('selHint').textContent='';
+    return;
+  }
+  $('selHint').innerHTML=`Showing build-up for line ${sel+1} — <b>${esc(r.L.desc||'(unnamed)')}</b>`+
+    (viewQty!=null?` at the <b>${viewQty}</b> break. <a href="#" id="backToQty" style="color:var(--accent-deep)">back to ${Q.lines[sel].qty||'line qty'}</a>`:`. Click any row to switch.`);
+  const bk=$('backToQty'); if(bk) bk.addEventListener('click',ev=>{ev.preventDefault(); viewQty=null; render();});
+  $('buildTag').textContent=`line ${sel+1} · ${f2(r.webSqft)} ft² printed · ${f2(r.mh)} machine hr`;
+  $('nestRollH').textContent=`Roll imposition — line ${sel+1}`;
+  $('nestRoll').innerHTML=nestRoll(r);
+  $('nestRollP').innerHTML=`${r.w}×${r.h}" · ${r.across} across × ${r.rows} row${r.rows===1?'':'s'} · ${f2(r.runFt)} lin ft`+
+  `<br>${(r.printUse*100).toFixed(0)}% of the ${r.usable}" printable width · ${(r.widthUse*100).toFixed(0)}% of the ${r.film.rollW}" roll bought`+
+  `<br>${f2(r.runFt-r.prodFt)} ft leader on ${f2(r.prodFt)} ft of product · <span class="${wClass((1-r.yld)*100)}">${((1-r.yld)*100).toFixed(0)}% of the film is waste</span>`;
+  if(r.two&&r.rig){
+    $('nestSheetH').textContent='Sheet imposition';
+    $('nestSheet').innerHTML=nestSheet(r);
+    $('nestSheetP').textContent=`${r.perSheet} up · ${r.sheets} sheets${r.splitK>1?` · trimmed into ${r.panels} panels`:''}`;
+  } else {
+    $('nestSheetH').textContent='Cut panels';
+    $('nestSheet').innerHTML='';
+    $('nestSheetP').textContent=`No substrate — the printed roll is cross-cut into ${r.panels} bed-sized panel${r.panels===1?'':'s'} for the flatbed.`;
+  }
+  $('matTable').querySelector('tbody').innerHTML=
+    r.mats.map(m=>`<tr><td class="op">${m.n}<span class="fx">${m.v?esc(m.v)+' · ':''}<span class="tag ${SRC[m.src][1]}">${SRC[m.src][0]}</span></span></td><td class="num">${m.q}</td><td class="num">${m.u}</td><td class="num">${money(m.c)}</td></tr>`).join('')
+    +`<tr><td class="op">Spoilage<span class="fx">${P.spoil}% of material</span></td><td class="num">—</td><td class="num">—</td><td class="num">${money(r.spoilC)}</td></tr>`
+    +`<tr class="tot"><td>Material</td><td class="num"></td><td class="num"></td><td class="num">${money(r.matTotal)}</td></tr>`;
+  $('opTable').querySelector('tbody').innerHTML=
+    r.ops.map(o=>`<tr><td class="op">${o.n}<span class="fx">${o.fx}${o.lh?` · ${esc(o.who)} @ ${m4(o.lr)} burdened`:''}</span></td><td class="num">${o.mh?f2(o.mh):'—'}</td><td class="num">${o.lh?f2(o.lh):'—'}</td><td class="num">${o.c?money(o.c):'—'}</td></tr>`).join('')
+    +`<tr><td class="op">Pack &amp; ship<span class="fx">quote-level ${f2(+P.shipHr)} hr × this line's ${(r.qty/q.pcs*100).toFixed(0)}% share of pieces</span></td><td class="num">—</td><td class="num">${f2(r.shipHr)}</td><td class="num">${money(q.shipC*r.qty/q.pcs)}</td></tr>`
+    +`<tr class="tot"><td>Line total</td><td class="num">${f2(r.mh)}</td><td class="num">${f2(r.lh+r.shipHr)}</td><td class="num">${money(r.total)}</td></tr>`;
+  $('notes').innerHTML=r.warn.map(t=>`<div class="note">${t}</div>`).join('')+r.info.map(t=>`<div class="note i">${t}</div>`).join('');
+
+  $('foot').innerHTML=`Seeded from the LG migration workstream: material costs from 2024–26 vendor invoices <span class="tag t-po">Grimco, Adhue, TapeCase, Polymershapes</span>, machine figures from published specs <span class="tag t-spec">Epson, Graphtec</span>, and the reverse-engineered Approach standards <span class="tag t-leg">setup and pre-cut hours</span>. Everything tagged <span class="tag t-shop">shop input</span> is a placeholder waiting on the floor. Each line is priced as a standalone run — if production gangs lines onto one web, that gain is theirs. Costs are direct conversion cost, not price; the CPA owns anything that lands in QBO.`;
+}
+buildLines();
+render();
+</script>
