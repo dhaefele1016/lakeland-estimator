@@ -1,9 +1,1116 @@
 {
-  "captured_at": "2026-09-14T19:01:42.056Z",
+  "captured_at": "2026-09-14T19:13:15.282Z",
   "source_file": "index.html",
   "source_sha256": "3aee8c2228b8afe3cf73faf3ed418cd62dbd50cf56fcf2806a3181cd92211df3",
   "capture_method": "chromium via playwright, page globals, file:// load",
   "scenario_count": 26,
+  "page_defaults": {
+    "DEF": {
+      "gutter": 0.25,
+      "edge": 0.5,
+      "maxPrintW": 46,
+      "leadFt": 3,
+      "printSetup": 0.25,
+      "inkMl": 1.2,
+      "inkCost": 0.3086,
+      "printAtt": 0.35,
+      "lamFtMin": 8,
+      "mOverlam": "l463",
+      "mAdhesive": "l2426",
+      "mMount": "l463",
+      "lamSetup": 0.15,
+      "mountMin": 1.5,
+      "precutHr": 0.3,
+      "sheetTrim": 0.25,
+      "setupSh": 1,
+      "bedW": 47.2,
+      "bedH": 36,
+      "cutIps": 7.9,
+      "cutEff": 0.55,
+      "pathFac": 1.15,
+      "passThru": 2,
+      "setupThru": 0.25,
+      "setupKiss": 0.3,
+      "loadMin": 0.5,
+      "cutAtt": 0.8,
+      "artNew": 0.75,
+      "artRep": 0.1,
+      "weedSec": 6,
+      "shipHr": 0.2,
+      "spoil": 5,
+      "margin": 35,
+      "burden": 30,
+      "util": 600,
+      "elec": 0.12,
+      "cap_press": 23685,
+      "life_press": 5,
+      "svc_press": 3000,
+      "kw_press": 1.8,
+      "cap_cut": 22000,
+      "life_cut": 7,
+      "svc_cut": 1200,
+      "kw_cut": 1,
+      "cap_l463": 6508,
+      "life_l463": 10,
+      "svc_l463": 500,
+      "kw_l463": 1.5,
+      "cap_l2426": 5000,
+      "life_l2426": 10,
+      "svc_l2426": 400,
+      "kw_l2426": 1,
+      "cap_l230": 3000,
+      "life_l230": 10,
+      "svc_l230": 250,
+      "kw_l230": 0.8,
+      "w_mai": 33,
+      "w_diana": 45,
+      "w_terry": 26.75,
+      "w_mark": 31,
+      "w_karen": 23.25,
+      "w_todd": 28,
+      "w_brian": 28,
+      "w_andy": 46.25,
+      "w_tim": 47.5,
+      "opArt": "mai",
+      "opPrint": "diana",
+      "opLam": "terry",
+      "opMount": "terry",
+      "opPrecut": "terry",
+      "opCut": "mark",
+      "opWeed": "karen",
+      "opShip": "karen"
+    },
+    "CREW": [
+      {
+        "id": "mai",
+        "n": "Production artist",
+        "w": 33,
+        "r": "Artwork setup and prepress"
+      },
+      {
+        "id": "diana",
+        "n": "Digital press operator",
+        "w": 45,
+        "r": "Runs all digital print jobs; production management"
+      },
+      {
+        "id": "terry",
+        "n": "Laminator operator",
+        "w": 26.75,
+        "r": "Laminating, mounting, die cutting"
+      },
+      {
+        "id": "mark",
+        "n": "Die cutter operator",
+        "w": 31,
+        "r": "Flatbed die cutting"
+      },
+      {
+        "id": "karen",
+        "n": "Inspection / shipping",
+        "w": 23.25,
+        "r": "Product inspection, packing, order fill"
+      },
+      {
+        "id": "todd",
+        "n": "Screen production",
+        "w": 28,
+        "r": "Screen making and reclaim; backup finishing"
+      },
+      {
+        "id": "brian",
+        "n": "Screen press operator",
+        "w": 28,
+        "r": "Screen printing"
+      },
+      {
+        "id": "andy",
+        "n": "Estimator / purchasing",
+        "w": 46.25,
+        "r": "Estimating, raw material purchasing, job tickets"
+      },
+      {
+        "id": "tim",
+        "n": "Account coordinator",
+        "w": 47.5,
+        "r": "Order coordination through delivery"
+      }
+    ],
+    "ROLES": [
+      {
+        "k": "opArt",
+        "l": "Prepress / artwork",
+        "d": "mai"
+      },
+      {
+        "k": "opPrint",
+        "l": "Print — Epson",
+        "d": "diana"
+      },
+      {
+        "k": "opLam",
+        "l": "Laminate",
+        "d": "terry"
+      },
+      {
+        "k": "opMount",
+        "l": "Mount to substrate",
+        "d": "terry"
+      },
+      {
+        "k": "opPrecut",
+        "l": "Pre-cut to bed",
+        "d": "terry"
+      },
+      {
+        "k": "opCut",
+        "l": "Die cut",
+        "d": "mark"
+      },
+      {
+        "k": "opWeed",
+        "l": "Weed &amp; inspect",
+        "d": "karen"
+      },
+      {
+        "k": "opShip",
+        "l": "Pack &amp; ship",
+        "d": "karen"
+      }
+    ],
+    "MACH": [
+      {
+        "k": "press",
+        "n": "Epson S80600",
+        "sub": "64\" solvent roll"
+      },
+      {
+        "k": "l463",
+        "n": "GFP 463TH",
+        "sub": "63\" top heat · overlaminate + mount"
+      },
+      {
+        "k": "l2426",
+        "n": "Flexcon 2426F",
+        "sub": "26\" · adhesive films"
+      },
+      {
+        "k": "l230",
+        "n": "GFP 230C",
+        "sub": "30\" compact · small jobs"
+      },
+      {
+        "k": "cut",
+        "n": "Graphtec FCX2000",
+        "sub": "47.2 × 36\" flatbed"
+      }
+    ],
+    "FILMS": [
+      {
+        "id": "ij35c54",
+        "n": "3M IJ35C matte white w/Comply 54\"",
+        "v": "Grimco · 53 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 230.46,
+        "psf": 0.34142222222222224
+      },
+      {
+        "id": "ij35c60",
+        "n": "3M IJ35C matte white w/Comply 60\"",
+        "v": "Grimco · 1 rl",
+        "rollW": 60,
+        "lenFt": 150,
+        "cost": 259.47,
+        "psf": 0.34596000000000005
+      },
+      {
+        "id": "or3651",
+        "n": "Orajet 3651GRA gloss white 54\"",
+        "v": "Grimco · 6 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 367.47,
+        "psf": 0.5444
+      },
+      {
+        "id": "arlon",
+        "n": "Arlon 4500GLX Xscape gloss 54\"",
+        "v": "Grimco · 1 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 240.16,
+        "psf": 0.3557925925925926
+      },
+      {
+        "id": "3m50t",
+        "n": "3M 50 transparent 24\"",
+        "v": "Grimco · 155 rl",
+        "rollW": 24,
+        "lenFt": 150,
+        "cost": 147.47,
+        "psf": 0.49156666666666665
+      },
+      {
+        "id": "o651c",
+        "n": "Oracal 651 clear 24\"",
+        "v": "Grimco · 68 rl",
+        "rollW": 24,
+        "lenFt": 150,
+        "cost": 134.86,
+        "psf": 0.4495333333333334
+      },
+      {
+        "id": "o651w",
+        "n": "Oracal 651 white 24\"",
+        "v": "Grimco · 19 rl",
+        "rollW": 24,
+        "lenFt": 150,
+        "cost": 103.12,
+        "psf": 0.34373333333333334
+      },
+      {
+        "id": "adh35",
+        "n": "3.5 mil white matte perm 27\"",
+        "v": "Adhue · 4 rl",
+        "rollW": 27,
+        "lenFt": 150,
+        "cost": 98.96,
+        "psf": 0.2932148148148148
+      },
+      {
+        "id": "adh23",
+        "n": "2.3 mil white barrier 27\"",
+        "v": "Adhue · 2 rl",
+        "rollW": 27,
+        "lenFt": 150,
+        "cost": 87.48,
+        "psf": 0.2592
+      },
+      {
+        "id": "pvcflex",
+        "n": "PVC Flex 3.2 mil white perm 54\"",
+        "v": "Adhue · 1 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 197.92,
+        "psf": 0.2932148148148148
+      },
+      {
+        "id": "mag",
+        "n": "NF flex magnet .030 24.375\"",
+        "v": "Grimco · 2 rl",
+        "rollW": 24.375,
+        "lenFt": 50,
+        "cost": 167.95,
+        "psf": 1.6536615384615383
+      }
+    ],
+    "OLAMS": [
+      {
+        "id": "none",
+        "n": "None",
+        "v": "",
+        "rollW": 0,
+        "lenFt": 0,
+        "cost": 0,
+        "psf": 0
+      },
+      {
+        "id": "8519_54",
+        "n": "3M 8519 luster overlam 54\"",
+        "v": "Grimco · 41 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 618.99,
+        "psf": 0.9170222222222222
+      },
+      {
+        "id": "8518_485",
+        "n": "3M 8518 gloss overlam 48.5\"",
+        "v": "Grimco · 17 rl",
+        "rollW": 48.5,
+        "lenFt": 150,
+        "cost": 550.8,
+        "psf": 0.9085360824742267
+      },
+      {
+        "id": "8518_54",
+        "n": "3M 8518 gloss overlam 54\"",
+        "v": "Grimco · 1 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 679.92,
+        "psf": 1.007288888888889
+      },
+      {
+        "id": "8519_485",
+        "n": "3M 8519 luster overlam 48.5\"",
+        "v": "Grimco · 8 rl",
+        "rollW": 48.5,
+        "lenFt": 150,
+        "cost": 608.08,
+        "psf": 1.003018556701031
+      },
+      {
+        "id": "adhpet",
+        "n": "Clear PET perm 1 mil 27\"",
+        "v": "Adhue · 2 rl",
+        "rollW": 27,
+        "lenFt": 750,
+        "cost": 189.74,
+        "psf": 0.11243851851851852
+      }
+    ],
+    "ADHS": [
+      {
+        "id": "none",
+        "n": "None",
+        "v": "",
+        "rollW": 0,
+        "lenFt": 0,
+        "cost": 0,
+        "psf": 0
+      },
+      {
+        "id": "9505_18",
+        "n": "3M 9505 adhesive transfer 18\"",
+        "v": "TapeCase · 180 yd",
+        "rollW": 18,
+        "lenFt": 540,
+        "cost": 732.18,
+        "psf": 0.9039259259259259
+      },
+      {
+        "id": "9505_24",
+        "n": "3M 9505 adhesive transfer 24\"",
+        "v": "TapeCase · 180 yd",
+        "rollW": 24,
+        "lenFt": 540,
+        "cost": 878.51,
+        "psf": 0.8134351851851852
+      }
+    ],
+    "RIGIDS": [
+      {
+        "id": "acr15",
+        "n": "Acrylic 15 mil V/G 24.5×48.5",
+        "v": "Adhue · 19,670 sh",
+        "shW": 24.5,
+        "shH": 48.5,
+        "cost": 5.64,
+        "psf": 0.6834925310330318
+      },
+      {
+        "id": "acr10g",
+        "n": "Acrylic 10 mil V/G 24.5×48.5",
+        "v": "Adhue · 400 sh",
+        "shW": 24.5,
+        "shH": 48.5,
+        "cost": 4.52,
+        "psf": 0.5477635177782453
+      },
+      {
+        "id": "acr10m",
+        "n": "Acrylic 10 mil V/M 24.5×48.5",
+        "v": "Adhue · 25 sh",
+        "shW": 24.5,
+        "shH": 48.5,
+        "cost": 4.08,
+        "psf": 0.4944414054281507
+      },
+      {
+        "id": "pc15",
+        "n": "Polycarb 15 mil V/G 24×48",
+        "v": "Adhue · 550 sh",
+        "shW": 24,
+        "shH": 48,
+        "cost": 4.08,
+        "psf": 0.51
+      },
+      {
+        "id": "pc10",
+        "n": "Polycarb 10 mil V/M 24×48",
+        "v": "Adhue · 300 sh",
+        "shW": 24,
+        "shH": 48,
+        "cost": 2.85,
+        "psf": 0.35625
+      },
+      {
+        "id": "pc30",
+        "n": "Polycarb 30 mil G/G 24×48",
+        "v": "Adhue · 39 sh",
+        "shW": 24,
+        "shH": 48,
+        "cost": 10.64,
+        "psf": 1.33
+      },
+      {
+        "id": "pc60",
+        "n": "Lexan .060 24×48",
+        "v": "Polymershapes",
+        "shW": 24,
+        "shH": 48,
+        "cost": 21.67,
+        "psf": 2.70875
+      },
+      {
+        "id": "pc030s",
+        "n": "Polycarb .030 16×16.875",
+        "v": "Polymershapes",
+        "shW": 16,
+        "shH": 16.875,
+        "cost": 4.17,
+        "psf": 2.2239999999999998
+      },
+      {
+        "id": "pvc15",
+        "n": "PVC 15 mil white 25×52",
+        "v": "Adhue · 50 sh",
+        "shW": 25,
+        "shH": 52,
+        "cost": 2.84,
+        "psf": 0.31458461538461535
+      },
+      {
+        "id": "pvc20",
+        "n": "PVC 20 mil white 25×52",
+        "v": "Adhue · 25 sh",
+        "shW": 25,
+        "shH": 52,
+        "cost": 3.47,
+        "psf": 0.38436923076923074
+      },
+      {
+        "id": "sty30",
+        "n": "Styrene .030 48×96",
+        "v": "Adhue · 207 sh",
+        "shW": 48,
+        "shH": 96,
+        "cost": 13.6,
+        "psf": 0.425
+      },
+      {
+        "id": "fpvc",
+        "n": "Foam PVC .118 24×48",
+        "v": "Polymershapes",
+        "shW": 24,
+        "shH": 48,
+        "cost": 9.4,
+        "psf": 1.175
+      }
+    ],
+    "PARAM_KEYS": [
+      "gutter",
+      "edge",
+      "maxPrintW",
+      "leadFt",
+      "printSetup",
+      "inkMl",
+      "inkCost",
+      "printAtt",
+      "lamFtMin",
+      "mOverlam",
+      "mAdhesive",
+      "mMount",
+      "lamSetup",
+      "mountMin",
+      "precutHr",
+      "sheetTrim",
+      "setupSh",
+      "bedW",
+      "bedH",
+      "cutIps",
+      "cutEff",
+      "pathFac",
+      "passThru",
+      "setupThru",
+      "setupKiss",
+      "loadMin",
+      "cutAtt",
+      "artNew",
+      "artRep",
+      "weedSec",
+      "shipHr",
+      "spoil",
+      "margin",
+      "burden",
+      "util",
+      "elec",
+      "cap_press",
+      "life_press",
+      "svc_press",
+      "kw_press",
+      "cap_cut",
+      "life_cut",
+      "svc_cut",
+      "kw_cut",
+      "cap_l463",
+      "life_l463",
+      "svc_l463",
+      "kw_l463",
+      "cap_l2426",
+      "life_l2426",
+      "svc_l2426",
+      "kw_l2426",
+      "cap_l230",
+      "life_l230",
+      "svc_l230",
+      "kw_l230",
+      "w_mai",
+      "w_diana",
+      "w_terry",
+      "w_mark",
+      "w_karen",
+      "w_todd",
+      "w_brian",
+      "w_andy",
+      "w_tim",
+      "opArt",
+      "opPrint",
+      "opLam",
+      "opMount",
+      "opPrecut",
+      "opCut",
+      "opWeed",
+      "opShip"
+    ],
+    "PARAMS": [
+      {
+        "g": "Press — Epson S80600",
+        "k": "gutter",
+        "l": "Gutter between parts (in)",
+        "d": 0.25,
+        "s": "shop"
+      },
+      {
+        "g": "Press — Epson S80600",
+        "k": "edge",
+        "l": "Unprintable edge each side (in)",
+        "d": 0.5,
+        "s": "spec"
+      },
+      {
+        "g": "Press — Epson S80600",
+        "k": "maxPrintW",
+        "l": "Max printed width used (in)",
+        "d": 46,
+        "s": "shop"
+      },
+      {
+        "g": "Press — Epson S80600",
+        "k": "leadFt",
+        "l": "Leader + trailer waste per run (ft)",
+        "d": 3,
+        "s": "shop"
+      },
+      {
+        "g": "Press — Epson S80600",
+        "k": "printSetup",
+        "l": "Load, RIP &amp; colour check (hr)",
+        "d": 0.25,
+        "s": "shop"
+      },
+      {
+        "g": "Press — Epson S80600",
+        "k": "inkMl",
+        "l": "Ink at 100% coverage (ml/sq ft)",
+        "d": 1.2,
+        "s": "shop"
+      },
+      {
+        "g": "Press — Epson S80600",
+        "k": "inkCost",
+        "l": "Ink cost ($/ml) — $216 per 700 ml cart",
+        "d": 0.3086,
+        "s": "po"
+      },
+      {
+        "g": "Press — Epson S80600",
+        "k": "printAtt",
+        "l": "Operator attendance on run (×)",
+        "d": 0.35,
+        "s": "shop"
+      },
+      {
+        "g": "Laminate &amp; mount",
+        "k": "lamFtMin",
+        "l": "Laminator speed (ft/min) — 463TH tops out at 13",
+        "d": 8,
+        "s": "spec"
+      },
+      {
+        "g": "Laminate &amp; mount",
+        "k": "mOverlam",
+        "l": "Machine — overlaminate pass",
+        "d": "l463",
+        "s": "shop",
+        "type": "mach"
+      },
+      {
+        "g": "Laminate &amp; mount",
+        "k": "mAdhesive",
+        "l": "Machine — adhesive pass",
+        "d": "l2426",
+        "s": "shop",
+        "type": "mach"
+      },
+      {
+        "g": "Laminate &amp; mount",
+        "k": "mMount",
+        "l": "Machine — mount to rigid",
+        "d": "l463",
+        "s": "shop",
+        "type": "mach"
+      },
+      {
+        "g": "Laminate &amp; mount",
+        "k": "lamSetup",
+        "l": "Laminator setup per pass (hr)",
+        "d": 0.15,
+        "s": "shop"
+      },
+      {
+        "g": "Laminate &amp; mount",
+        "k": "mountMin",
+        "l": "Mount to rigid (min/sheet)",
+        "d": 1.5,
+        "s": "shop"
+      },
+      {
+        "g": "Laminate &amp; mount",
+        "k": "precutHr",
+        "l": "Pre-cut / trim to bed (hr)",
+        "d": 0.3,
+        "s": "leg"
+      },
+      {
+        "g": "Laminate &amp; mount",
+        "k": "sheetTrim",
+        "l": "Sheet edge trim each side (in)",
+        "d": 0.25,
+        "s": "shop"
+      },
+      {
+        "g": "Laminate &amp; mount",
+        "k": "setupSh",
+        "l": "Makeready sheets per run",
+        "d": 1,
+        "s": "shop"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "bedW",
+        "l": "Cutter bed width (in)",
+        "d": 47.2,
+        "s": "spec"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "bedH",
+        "l": "Cutter bed depth (in)",
+        "d": 36,
+        "s": "spec"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "cutIps",
+        "l": "Blade speed (in/sec)",
+        "d": 7.9,
+        "s": "spec"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "cutEff",
+        "l": "Speed realised, accel/decel (×)",
+        "d": 0.55,
+        "s": "shop"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "pathFac",
+        "l": "Path vs. perimeter, cut-outs (×)",
+        "d": 1.15,
+        "s": "shop"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "passThru",
+        "l": "Passes — through cut",
+        "d": 2,
+        "s": "shop"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "setupThru",
+        "l": "Setup — through cut (hr)",
+        "d": 0.25,
+        "s": "leg"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "setupKiss",
+        "l": "Setup — kiss cut (hr)",
+        "d": 0.3,
+        "s": "leg"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "loadMin",
+        "l": "Load, register, unload (min/panel)",
+        "d": 0.5,
+        "s": "shop"
+      },
+      {
+        "g": "Die cut — FCX2000",
+        "k": "cutAtt",
+        "l": "Operator attendance on cut (×)",
+        "d": 0.8,
+        "s": "shop"
+      },
+      {
+        "g": "Labor, finishing &amp; rates",
+        "k": "artNew",
+        "l": "Prepress — new graphic (hr)",
+        "d": 0.75,
+        "s": "shop"
+      },
+      {
+        "g": "Labor, finishing &amp; rates",
+        "k": "artRep",
+        "l": "Prepress — repeat (hr)",
+        "d": 0.1,
+        "s": "shop"
+      },
+      {
+        "g": "Labor, finishing &amp; rates",
+        "k": "weedSec",
+        "l": "Weed &amp; inspect (sec/piece)",
+        "d": 6,
+        "s": "shop"
+      },
+      {
+        "g": "Labor, finishing &amp; rates",
+        "k": "shipHr",
+        "l": "Pack &amp; ship per QUOTE (hr)",
+        "d": 0.2,
+        "s": "leg"
+      },
+      {
+        "g": "Labor, finishing &amp; rates",
+        "k": "spoil",
+        "l": "Material spoilage (%)",
+        "d": 5,
+        "s": "shop"
+      },
+      {
+        "g": "Labor, finishing &amp; rates",
+        "k": "margin",
+        "l": "Target gross margin (%)",
+        "d": 35,
+        "s": "shop"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "burden",
+        "l": "Burden on wages (%)",
+        "d": 30,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "util",
+        "l": "Productive hours per machine, per year",
+        "d": 600,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "elec",
+        "l": "Electricity ($/kWh)",
+        "d": 0.12,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "cap_press",
+        "l": "Epson — replacement cost ($)",
+        "d": 23685,
+        "s": "mkt"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "life_press",
+        "l": "Epson — useful life (yr)",
+        "d": 5,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "svc_press",
+        "l": "Epson — service, heads, parts ($/yr)",
+        "d": 3000,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "kw_press",
+        "l": "Epson — draw (kW)",
+        "d": 1.8,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "cap_cut",
+        "l": "Graphtec — replacement cost ($)",
+        "d": 22000,
+        "s": "mkt"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "life_cut",
+        "l": "Graphtec — useful life (yr)",
+        "d": 7,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "svc_cut",
+        "l": "Graphtec — blades, mats, service ($/yr)",
+        "d": 1200,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "kw_cut",
+        "l": "Graphtec — draw with vacuum (kW)",
+        "d": 1,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "cap_l463",
+        "l": "GFP 463TH — replacement cost ($)",
+        "d": 6508,
+        "s": "mkt"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "life_l463",
+        "l": "GFP 463TH — useful life (yr)",
+        "d": 10,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "svc_l463",
+        "l": "GFP 463TH — rollers, service ($/yr)",
+        "d": 500,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "kw_l463",
+        "l": "GFP 463TH — draw (kW)",
+        "d": 1.5,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "cap_l2426",
+        "l": "Flexcon 2426F — replacement cost ($)",
+        "d": 5000,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "life_l2426",
+        "l": "Flexcon 2426F — useful life (yr)",
+        "d": 10,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "svc_l2426",
+        "l": "Flexcon 2426F — service ($/yr)",
+        "d": 400,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "kw_l2426",
+        "l": "Flexcon 2426F — draw (kW)",
+        "d": 1,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "cap_l230",
+        "l": "GFP 230C — replacement cost ($)",
+        "d": 3000,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "life_l230",
+        "l": "GFP 230C — useful life (yr)",
+        "d": 10,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "svc_l230",
+        "l": "GFP 230C — service ($/yr)",
+        "d": 250,
+        "s": "shop"
+      },
+      {
+        "g": "Machine cost rates",
+        "k": "kw_l230",
+        "l": "GFP 230C — draw (kW)",
+        "d": 0.8,
+        "s": "shop"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "w_mai",
+        "l": "Production artist — Artwork setup and prepress ($/hr)",
+        "d": 33,
+        "s": "pay"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "w_diana",
+        "l": "Digital press operator — Runs all digital print jobs; production management ($/hr)",
+        "d": 45,
+        "s": "pay"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "w_terry",
+        "l": "Laminator operator — Laminating, mounting, die cutting ($/hr)",
+        "d": 26.75,
+        "s": "pay"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "w_mark",
+        "l": "Die cutter operator — Flatbed die cutting ($/hr)",
+        "d": 31,
+        "s": "pay"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "w_karen",
+        "l": "Inspection / shipping — Product inspection, packing, order fill ($/hr)",
+        "d": 23.25,
+        "s": "pay"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "w_todd",
+        "l": "Screen production — Screen making and reclaim; backup finishing ($/hr)",
+        "d": 28,
+        "s": "pay"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "w_brian",
+        "l": "Screen press operator — Screen printing ($/hr)",
+        "d": 28,
+        "s": "pay"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "w_andy",
+        "l": "Estimator / purchasing — Estimating, raw material purchasing, job tickets ($/hr)",
+        "d": 46.25,
+        "s": "pay"
+      },
+      {
+        "g": "Crew &amp; burden",
+        "k": "w_tim",
+        "l": "Account coordinator — Order coordination through delivery ($/hr)",
+        "d": 47.5,
+        "s": "pay"
+      },
+      {
+        "g": "Who runs what",
+        "k": "opArt",
+        "l": "Prepress / artwork",
+        "d": "mai",
+        "s": "shop",
+        "type": "sel"
+      },
+      {
+        "g": "Who runs what",
+        "k": "opPrint",
+        "l": "Print — Epson",
+        "d": "diana",
+        "s": "shop",
+        "type": "sel"
+      },
+      {
+        "g": "Who runs what",
+        "k": "opLam",
+        "l": "Laminate",
+        "d": "terry",
+        "s": "shop",
+        "type": "sel"
+      },
+      {
+        "g": "Who runs what",
+        "k": "opMount",
+        "l": "Mount to substrate",
+        "d": "terry",
+        "s": "shop",
+        "type": "sel"
+      },
+      {
+        "g": "Who runs what",
+        "k": "opPrecut",
+        "l": "Pre-cut to bed",
+        "d": "terry",
+        "s": "shop",
+        "type": "sel"
+      },
+      {
+        "g": "Who runs what",
+        "k": "opCut",
+        "l": "Die cut",
+        "d": "mark",
+        "s": "shop",
+        "type": "sel"
+      },
+      {
+        "g": "Who runs what",
+        "k": "opWeed",
+        "l": "Weed &amp; inspect",
+        "d": "karen",
+        "s": "shop",
+        "type": "sel"
+      },
+      {
+        "g": "Who runs what",
+        "k": "opShip",
+        "l": "Pack &amp; ship",
+        "d": "karen",
+        "s": "shop",
+        "type": "sel"
+      }
+    ],
+    "default_stock": {
+      "film2": "3m50t",
+      "adh2": "9505_24",
+      "rig2": "acr15",
+      "back2": "o651w",
+      "film1": "ij35c54",
+      "olam1": "8519_54",
+      "mode": 140,
+      "cov": 0.75
+    }
+  },
   "results": {
     "con1_basic": {
       "L": {

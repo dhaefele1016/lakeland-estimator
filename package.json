@@ -1,0 +1,16 @@
+{
+  "name": "lakeland-estimator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Estimating calculator for custom digital printed work at Lakeland Graphics. Six-month stop-gap.",
+  "scripts": {
+    "test": "node test/run-golden.js",
+    "test:browser": "node tools/capture-golden.js --check",
+    "test:render": "node tools/check-render.js git:HEAD",
+    "capture": "node tools/capture-golden.js",
+    "summary": "node tools/summarize-golden.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}
