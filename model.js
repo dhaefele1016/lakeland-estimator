@@ -19,7 +19,7 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
 'use strict';
 
-const MODEL_VERSION = '1.0.0';
+const MODEL_VERSION = '1.1.0';
 
 /* ---------------- material library (real purchase prices) ---------------- */
 const R=(w,lenFt,cost)=>({rollW:w,lenFt,cost,psf:cost/(w/12*lenFt)});
@@ -51,6 +51,7 @@ const ADHS=[
 ];
 const S=(w,h,cost)=>({shW:w,shH:h,cost,psf:cost/(w*h/144)});
 const RIGIDS=[
+ {id:'none', n:'None', v:'', shW:0,shH:0,cost:0,psf:0},
  {id:'acr15', n:'Acrylic 15 mil V/G 24.5×48.5', v:'Adhue · 19,670 sh', ...S(24.5,48.5,5.64)},
  {id:'acr10g',n:'Acrylic 10 mil V/G 24.5×48.5', v:'Adhue · 400 sh',    ...S(24.5,48.5,4.52)},
  {id:'acr10m',n:'Acrylic 10 mil V/M 24.5×48.5', v:'Adhue · 25 sh',     ...S(24.5,48.5,4.08)},
@@ -214,7 +215,13 @@ function calcLine(ctx,L,qtyOverride){
   const film = byId(ctx.FILMS_ALL(), two?stock.film2:stock.film1);
   const olam = two? byId(OLAMS,'none') : byId(ctx.OLAMS_ALL(),stock.olam1);
   const adh  = two? byId(ctx.ADHS_ALL(),stock.adh2) : byId(ADHS,'none');
-  const rig  = two? byId(ctx.RIGIDS_ALL(),stock.rig2) : null;
+  /* A rigid of None behaves exactly as no rigid at all — same test the
+     overlaminate and adhesive already use. Everything downstream keys off `rig`
+     being null: no sheet imposition, no substrate cost, no mount pass, no
+     pre-cut, and no sheet-fit error. The panel count falls back to the roll
+     branch, which is what the flatbed actually gets. */
+  const rigSel = two? byId(ctx.RIGIDS_ALL(),stock.rig2) : null;
+  const rig  = (rigSel && rigSel.psf>0)? rigSel : null;
   const back = backed? byId(ctx.FILMS_ALL(),stock.back2) : null;
   const speed=+stock.mode, cov=+stock.cov, g=+P.gutter;
   const warn=[], info=[];

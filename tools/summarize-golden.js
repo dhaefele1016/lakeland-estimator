@@ -40,6 +40,17 @@ const EXPECT = {
   quote_margin_50:       r => Math.abs(r.mg - 50) < 1e-9,
   breaks_default:        r => Array.isArray(r) && r.length === 4,
   betterqty_95:          r => r && r.qty === 100,
+  // the no-substrate path, added with MODEL_VERSION 1.1.0
+  con2_no_substrate:     r => r.rig === null && r.sheets === 0 && r.splitK === 1
+                              && !r.ops.some(o => /Mount to substrate|Pre-cut/.test(o.n))
+                              && !r.mats.some(m => /sheet/.test(m.q)),
+  con3_no_substrate:     r => r.rig === null && r.backed === true
+                              && r.ops.some(o => /Backer/.test(o.n))
+                              && !r.ops.some(o => /Mount to substrate/.test(o.n)),
+  con2_none_big_part:    r => !r.error && r.rig === null,
+  quote_no_substrate_multiline:
+                         r => r.good.length === 3 && r.shipC > 0
+                              && r.good.every(g => !g.two || g.rig === null),
 };
 
 console.log('\nGolden fixtures — captured ' + g.captured_at);
@@ -109,5 +120,7 @@ for (const sc of scenarios) {
   if (!ok) { bad++; console.log('  ✗ ' + sc.id + ' did not reach its intended branch'); }
 }
 if (missing.length) console.log('  ! no branch check written for: ' + missing.join(', '));
-console.log('\n' + (bad === 0 ? '✓ all ' + scenarios.length + ' scenarios reached their intended branch' :
+const checked = scenarios.length - missing.length;
+console.log('\n' + (bad === 0 ? '✓ ' + checked + ' of ' + scenarios.length +
+  ' scenarios reached their intended branch' + (missing.length ? ' (' + missing.length + ' unchecked — see above)' : '') :
   '✗ ' + bad + ' scenario(s) missed their branch'));

@@ -217,4 +217,44 @@ module.exports = [
     qtyOverride: 95,
     lines: [L({ w: 4, h: 6, qty: 95 })],
   },
+
+  // ---- no substrate (added with MODEL_VERSION 1.1.0) ------------------------
+  // A rigid of None on a construction that would normally carry one. Everything
+  // sheet-shaped should vanish: no substrate cost, no mount pass, no pre-cut, no
+  // sheet-fit error, and the panel count comes from the roll branch instead.
+  {
+    id: 'con2_no_substrate',
+    note: 'Construction 2 with rigid None — adhesive but nothing to mount it to.',
+    call: 'calcLine',
+    stock: { rig2: 'none' },
+    lines: [L({ w: 8, h: 10, qty: 50, con: '2' })],
+  },
+  {
+    id: 'con3_no_substrate',
+    note: 'Construction 3 with rigid None — the backer pass still applies, the mount does not.',
+    call: 'calcLine',
+    stock: { rig2: 'none' },
+    lines: [L({ w: 8, h: 10, qty: 50, con: '3' })],
+  },
+  {
+    id: 'con2_none_big_part',
+    note: '20×20 on rigid None — would have failed the 16×16.875 sheet check; with no '
+        + 'substrate there is no sheet to fail, and only the film limit applies.',
+    call: 'calcLine',
+    stock: { rig2: 'none' },
+    lines: [L({ w: 20, h: 20, qty: 5, con: '2' })],
+  },
+  {
+    id: 'quote_no_substrate_multiline',
+    note: 'Three mixed-construction lines with rigid None — checks the pack-and-ship split '
+        + 'still works when no line has a substrate. (Stock is per quote, not per line, so a '
+        + 'quote cannot mix substrate and no-substrate; that is a UI constraint, not a bug.)',
+    call: 'quote',
+    stock: { rig2: 'none' },
+    lines: [
+      L({ id: 'L1', desc: 'decal', w: 4, h: 6, qty: 100 }),
+      L({ id: 'L2', desc: 'adhesive, no substrate', w: 8, h: 10, qty: 50, con: '2', dcut: 'kiss' }),
+      L({ id: 'L3', desc: 'backed, no substrate', w: 12, h: 3, qty: 60, con: '3', art: 'repeat' }),
+    ],
+  },
 ];
