@@ -48,6 +48,13 @@ const EXPECT = {
                               && r.ops.some(o => /Backer/.test(o.n))
                               && !r.ops.some(o => /Mount to substrate/.test(o.n)),
   con2_none_big_part:    r => !r.error && r.rig === null,
+  // no die cut / hand trim, added with MODEL_VERSION 1.2.0
+  dcut_none_wall_size:   r => !r.error && r.ops.some(o => /Hand trim/.test(o.n))
+                              && !r.ops.some(o => /Die cut/.test(o.n)),
+  dcut_none_lifts_width: r => !r.error && r.across >= 1 && r.usable > 46,
+  dcut_none_vs_through:  r => r.ops.some(o => /Hand trim/.test(o.n)),
+  dcut_through_pair:     r => r.ops.some(o => /Die cut/.test(o.n)),
+  warn_nest_exceeds_bed: r => r.warn.some(w => /cutter bed/.test(w)),
   quote_no_substrate_multiline:
                          r => r.good.length === 3 && r.shipC > 0
                               && r.good.every(g => !g.two || g.rig === null),

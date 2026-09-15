@@ -1,9 +1,9 @@
 {
-  "captured_at": "2026-09-15T19:01:17.009Z",
+  "captured_at": "2026-09-15T20:23:11.148Z",
   "source_file": "index.html",
-  "source_sha256": "1df6e1e97fb0f336a968159b99ae174108a5415dd40a33b18b8b90b1efc9af34",
+  "source_sha256": "3a2d884a9b1c39f5ce27611b46febb0591b85821c45dd6d62641f5e3d383c9d0",
   "capture_method": "chromium via playwright, page globals, file:// load",
-  "scenario_count": 30,
+  "scenario_count": 35,
   "page_defaults": {
     "DEF": {
       "gutter": 0.25,
@@ -36,6 +36,7 @@
       "artNew": 0.75,
       "artRep": 0.1,
       "weedSec": 6,
+      "trimMin": 3,
       "shipHr": 0.2,
       "spoil": 5,
       "margin": 35,
@@ -541,6 +542,7 @@
       "artNew",
       "artRep",
       "weedSec",
+      "trimMin",
       "shipHr",
       "spoil",
       "margin",
@@ -601,9 +603,9 @@
         "s": "spec"
       },
       {
-        "g": "Press — Epson S80600",
+        "g": "Die cut — FCX2000",
         "k": "maxPrintW",
-        "l": "Max printed width used (in)",
+        "l": "Max printed width when die cutting (in)",
         "d": 46,
         "s": "shop"
       },
@@ -797,6 +799,13 @@
         "k": "weedSec",
         "l": "Weed &amp; inspect (sec/piece)",
         "d": 6,
+        "s": "shop"
+      },
+      {
+        "g": "Labor, finishing &amp; rates",
+        "k": "trimMin",
+        "l": "Hand trim when not die cut (min/piece)",
+        "d": 3,
         "s": "shop"
       },
       {
@@ -7656,6 +7665,730 @@
       "pw": 20,
       "ph": 20,
       "warn": [],
+      "info": []
+    },
+    "dcut_none_wall_size": {
+      "L": {
+        "id": "L1",
+        "desc": "3-layer decal",
+        "w": 60.75,
+        "h": 55,
+        "qty": 1,
+        "con": "3",
+        "dcut": "none",
+        "art": "new"
+      },
+      "w": 60.75,
+      "h": 55,
+      "qty": 1,
+      "two": true,
+      "backed": true,
+      "across": 1,
+      "rot": true,
+      "rows": 1,
+      "runFt": 8.104166666666668,
+      "prodFt": 5.104166666666667,
+      "webSqft": 40.520833333333336,
+      "partSqft": 23.203125,
+      "yld": 0.5726221079691516,
+      "widthUse": 0.9166666666666666,
+      "printUse": 0.9322033898305084,
+      "lengthUse": 0.6298200514138816,
+      "usable": 59,
+      "perSheet": 1,
+      "sheets": 0,
+      "panels": 1,
+      "splitK": 1,
+      "sheetW": 0,
+      "sheetH": 0,
+      "mats": [
+        {
+          "n": "3M IJ35C matte white w/Comply 60\"",
+          "v": "Grimco · 1 rl",
+          "q": "8.10 lin ft @ 60\"",
+          "u": "$1.73/lin ft",
+          "c": 14.018587500000004,
+          "src": "po"
+        },
+        {
+          "n": "Oracal 651 white 24\"",
+          "v": "Grimco · 19 rl",
+          "q": "24.31 lin ft @ 24\"",
+          "u": "$0.687/lin ft",
+          "c": 16.714033333333337,
+          "src": "po"
+        },
+        {
+          "n": "3M 9505 adhesive transfer 24\"",
+          "v": "TapeCase · 180 yd",
+          "q": "24.31 lin ft @ 24\"",
+          "u": "$1.63/lin ft",
+          "c": 39.553285879629634,
+          "src": "po"
+        },
+        {
+          "n": "UltraChrome GS3 ink",
+          "v": "North Light Color · $216/cart",
+          "q": "22 ml @ 75%",
+          "u": "$0.309/ml",
+          "c": 6.7666577343749985,
+          "src": "po"
+        }
+      ],
+      "matSub": 77.05256444733797,
+      "spoilC": 3.852628222366899,
+      "matTotal": 80.90519266970487,
+      "wasteCost": 30.038642650462968,
+      "rollCost": 70.28590671296297,
+      "ops": [
+        {
+          "n": "Prepress / artwork",
+          "mh": 0,
+          "lh": 0.75,
+          "c": 32.175,
+          "fx": "new graphic → 0.75 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Screen prep",
+          "mh": 0,
+          "lh": 0,
+          "c": 0,
+          "fx": "digital route — no screens, 0 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Print — Epson S80600",
+          "mh": 0.5394345238095238,
+          "lh": 0.35130208333333335,
+          "c": 27.623697916666668,
+          "fx": "40.52 ft² ÷ 140 ft²/hr + 0.25 setup",
+          "who": "Digital press operator",
+          "lr": 58.5
+        },
+        {
+          "n": "Backer vinyl — GFP 463TH",
+          "mh": 0.16688368055555555,
+          "lh": 0.16688368055555555,
+          "c": 6.153501953125,
+          "fx": "0.15 setup + 8.10 ft ÷ 8 ft/min",
+          "who": "Laminator operator",
+          "lr": 34.775
+        },
+        {
+          "n": "Adhesive — Flexcon 2426F",
+          "mh": 0.16688368055555555,
+          "lh": 0.16688368055555555,
+          "c": 6.073731553819444,
+          "fx": "0.15 setup + 8.10 ft ÷ 8 ft/min",
+          "who": "Laminator operator",
+          "lr": 34.775
+        },
+        {
+          "n": "Hand trim — no die cut",
+          "mh": 0,
+          "lh": 0.05,
+          "c": 2.015,
+          "fx": "1 × 3 min by hand",
+          "who": "Die cutter operator",
+          "lr": 40.300000000000004
+        },
+        {
+          "n": "Weed &amp; inspect",
+          "mh": 0,
+          "lh": 0.0016666666666666668,
+          "c": 0.050375,
+          "fx": "1 × 6 sec",
+          "who": "Inspection / shipping",
+          "lr": 30.225
+        }
+      ],
+      "mh": 0.873201884920635,
+      "lh": 1.4867361111111113,
+      "conv": 74.09130642361112,
+      "base": 154.996499093316,
+      "film": {
+        "id": "ij35c60",
+        "n": "3M IJ35C matte white w/Comply 60\"",
+        "v": "Grimco · 1 rl",
+        "rollW": 60,
+        "lenFt": 150,
+        "cost": 259.47,
+        "psf": 0.34596000000000005
+      },
+      "rig": null,
+      "pw": 55,
+      "ph": 60.75,
+      "warn": [
+        "Oracal 651 white 24\" is 24\" against a 60\" web — 3 passes, 24.31 linear feet.",
+        "3M 9505 adhesive transfer 24\" is 24\" against a 60\" web — 3 passes, 24.31 linear feet."
+      ],
+      "info": []
+    },
+    "dcut_none_lifts_width": {
+      "L": {
+        "id": "L1",
+        "desc": "",
+        "w": 50,
+        "h": 20,
+        "qty": 10,
+        "con": "1",
+        "dcut": "none",
+        "art": "new"
+      },
+      "w": 50,
+      "h": 20,
+      "qty": 10,
+      "two": false,
+      "backed": false,
+      "across": 2,
+      "rot": true,
+      "rows": 5,
+      "runFt": 23.958333333333332,
+      "prodFt": 20.958333333333332,
+      "webSqft": 119.79166666666667,
+      "partSqft": 69.44444444444444,
+      "yld": 0.5797101449275361,
+      "widthUse": 0.6708333333333333,
+      "printUse": 0.6822033898305084,
+      "lengthUse": 0.8747826086956522,
+      "usable": 59,
+      "perSheet": 2,
+      "sheets": 0,
+      "panels": 5,
+      "splitK": 1,
+      "sheetW": 0,
+      "sheetH": 0,
+      "mats": [
+        {
+          "n": "3M IJ35C matte white w/Comply 60\"",
+          "v": "Grimco · 1 rl",
+          "q": "23.96 lin ft @ 60\"",
+          "u": "$1.73/lin ft",
+          "c": 41.443125,
+          "src": "po"
+        },
+        {
+          "n": "3M 8519 luster overlam 54\"",
+          "v": "Grimco · 41 rl",
+          "q": "47.92 lin ft @ 54\"",
+          "u": "$4.13/lin ft",
+          "c": 197.73291666666665,
+          "src": "po"
+        },
+        {
+          "n": "UltraChrome GS3 ink",
+          "v": "North Light Color · $216/cart",
+          "q": "66 ml @ 75%",
+          "u": "$0.309/ml",
+          "c": 20.251875,
+          "src": "po"
+        }
+      ],
+      "matSub": 259.42791666666665,
+      "spoilC": 12.97139583333333,
+      "matTotal": 272.39931249999995,
+      "wasteCost": 100.52326388888889,
+      "rollCost": 239.17604166666666,
+      "ops": [
+        {
+          "n": "Prepress / artwork",
+          "mh": 0,
+          "lh": 0.75,
+          "c": 32.175,
+          "fx": "new graphic → 0.75 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Screen prep",
+          "mh": 0,
+          "lh": 0,
+          "c": 0,
+          "fx": "digital route — no screens, 0 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Print — Epson S80600",
+          "mh": 1.1056547619047619,
+          "lh": 0.5494791666666667,
+          "c": 46.640770833333335,
+          "fx": "119.79 ft² ÷ 140 ft²/hr + 0.25 setup",
+          "who": "Digital press operator",
+          "lr": 58.5
+        },
+        {
+          "n": "Overlaminate — GFP 463TH",
+          "mh": 0.19991319444444444,
+          "lh": 0.19991319444444444,
+          "c": 7.37139921875,
+          "fx": "0.15 setup + 23.96 ft ÷ 8 ft/min",
+          "who": "Laminator operator",
+          "lr": 34.775
+        },
+        {
+          "n": "Hand trim — no die cut",
+          "mh": 0,
+          "lh": 0.5,
+          "c": 20.150000000000002,
+          "fx": "10 × 3 min by hand",
+          "who": "Die cutter operator",
+          "lr": 40.300000000000004
+        },
+        {
+          "n": "Weed &amp; inspect",
+          "mh": 0,
+          "lh": 0.016666666666666666,
+          "c": 0.50375,
+          "fx": "10 × 6 sec",
+          "who": "Inspection / shipping",
+          "lr": 30.225
+        }
+      ],
+      "mh": 1.3055679563492064,
+      "lh": 2.0160590277777777,
+      "conv": 106.84092005208333,
+      "base": 379.2402325520833,
+      "film": {
+        "id": "ij35c60",
+        "n": "3M IJ35C matte white w/Comply 60\"",
+        "v": "Grimco · 1 rl",
+        "rollW": 60,
+        "lenFt": 150,
+        "cost": 259.47,
+        "psf": 0.34596000000000005
+      },
+      "rig": null,
+      "pw": 20,
+      "ph": 50,
+      "warn": [
+        "3M 8519 luster overlam 54\" is 54\" against a 60\" web — 2 passes, 47.92 linear feet."
+      ],
+      "info": []
+    },
+    "dcut_none_vs_through": {
+      "L": {
+        "id": "L1",
+        "desc": "",
+        "w": 30,
+        "h": 20,
+        "qty": 10,
+        "con": "1",
+        "dcut": "none",
+        "art": "new"
+      },
+      "w": 30,
+      "h": 20,
+      "qty": 10,
+      "two": false,
+      "backed": false,
+      "across": 2,
+      "rot": true,
+      "rows": 5,
+      "runFt": 15.625,
+      "prodFt": 12.625,
+      "webSqft": 70.3125,
+      "partSqft": 41.666666666666664,
+      "yld": 0.5925925925925926,
+      "widthUse": 0.7453703703703703,
+      "printUse": 0.7594339622641509,
+      "lengthUse": 0.808,
+      "usable": 53,
+      "perSheet": 2,
+      "sheets": 0,
+      "panels": 5,
+      "splitK": 1,
+      "sheetW": 0,
+      "sheetH": 0,
+      "mats": [
+        {
+          "n": "3M IJ35C matte white w/Comply 54\"",
+          "v": "Grimco · 53 rl",
+          "q": "15.63 lin ft @ 54\"",
+          "u": "$1.54/lin ft",
+          "c": 24.00625,
+          "src": "po"
+        },
+        {
+          "n": "3M 8519 luster overlam 54\"",
+          "v": "Grimco · 41 rl",
+          "q": "15.63 lin ft @ 54\"",
+          "u": "$4.13/lin ft",
+          "c": 64.47812499999999,
+          "src": "po"
+        },
+        {
+          "n": "UltraChrome GS3 ink",
+          "v": "North Light Color · $216/cart",
+          "q": "39 ml @ 75%",
+          "u": "$0.309/ml",
+          "c": 12.151124999999999,
+          "src": "po"
+        }
+      ],
+      "matSub": 100.6355,
+      "spoilC": 5.031775,
+      "matTotal": 105.66727499999999,
+      "wasteCost": 36.04918981481482,
+      "rollCost": 88.484375,
+      "ops": [
+        {
+          "n": "Prepress / artwork",
+          "mh": 0,
+          "lh": 0.75,
+          "c": 32.175,
+          "fx": "new graphic → 0.75 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Screen prep",
+          "mh": 0,
+          "lh": 0,
+          "c": 0,
+          "fx": "digital route — no screens, 0 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Print — Epson S80600",
+          "mh": 0.7522321428571429,
+          "lh": 0.42578125,
+          "c": 34.77071875,
+          "fx": "70.31 ft² ÷ 140 ft²/hr + 0.25 setup",
+          "who": "Digital press operator",
+          "lr": 58.5
+        },
+        {
+          "n": "Overlaminate — GFP 463TH",
+          "mh": 0.18255208333333334,
+          "lh": 0.18255208333333334,
+          "c": 6.73124296875,
+          "fx": "0.15 setup + 15.63 ft ÷ 8 ft/min",
+          "who": "Laminator operator",
+          "lr": 34.775
+        },
+        {
+          "n": "Hand trim — no die cut",
+          "mh": 0,
+          "lh": 0.5,
+          "c": 20.150000000000002,
+          "fx": "10 × 3 min by hand",
+          "who": "Die cutter operator",
+          "lr": 40.300000000000004
+        },
+        {
+          "n": "Weed &amp; inspect",
+          "mh": 0,
+          "lh": 0.016666666666666666,
+          "c": 0.50375,
+          "fx": "10 × 6 sec",
+          "who": "Inspection / shipping",
+          "lr": 30.225
+        }
+      ],
+      "mh": 0.9347842261904762,
+      "lh": 1.875,
+      "conv": 94.33071171875,
+      "base": 199.99798671874998,
+      "film": {
+        "id": "ij35c54",
+        "n": "3M IJ35C matte white w/Comply 54\"",
+        "v": "Grimco · 53 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 230.46,
+        "psf": 0.34142222222222224
+      },
+      "rig": null,
+      "pw": 20,
+      "ph": 30,
+      "warn": [],
+      "info": []
+    },
+    "dcut_through_pair": {
+      "L": {
+        "id": "L1",
+        "desc": "",
+        "w": 30,
+        "h": 20,
+        "qty": 10,
+        "con": "1",
+        "dcut": "through",
+        "art": "new"
+      },
+      "w": 30,
+      "h": 20,
+      "qty": 10,
+      "two": false,
+      "backed": false,
+      "across": 2,
+      "rot": true,
+      "rows": 5,
+      "runFt": 15.625,
+      "prodFt": 12.625,
+      "webSqft": 70.3125,
+      "partSqft": 41.666666666666664,
+      "yld": 0.5925925925925926,
+      "widthUse": 0.7453703703703703,
+      "printUse": 0.875,
+      "lengthUse": 0.808,
+      "usable": 46,
+      "perSheet": 2,
+      "sheets": 0,
+      "panels": 5,
+      "splitK": 1,
+      "sheetW": 0,
+      "sheetH": 0,
+      "mats": [
+        {
+          "n": "3M IJ35C matte white w/Comply 54\"",
+          "v": "Grimco · 53 rl",
+          "q": "15.63 lin ft @ 54\"",
+          "u": "$1.54/lin ft",
+          "c": 24.00625,
+          "src": "po"
+        },
+        {
+          "n": "3M 8519 luster overlam 54\"",
+          "v": "Grimco · 41 rl",
+          "q": "15.63 lin ft @ 54\"",
+          "u": "$4.13/lin ft",
+          "c": 64.47812499999999,
+          "src": "po"
+        },
+        {
+          "n": "UltraChrome GS3 ink",
+          "v": "North Light Color · $216/cart",
+          "q": "39 ml @ 75%",
+          "u": "$0.309/ml",
+          "c": 12.151124999999999,
+          "src": "po"
+        }
+      ],
+      "matSub": 100.6355,
+      "spoilC": 5.031775,
+      "matTotal": 105.66727499999999,
+      "wasteCost": 36.04918981481482,
+      "rollCost": 88.484375,
+      "ops": [
+        {
+          "n": "Prepress / artwork",
+          "mh": 0,
+          "lh": 0.75,
+          "c": 32.175,
+          "fx": "new graphic → 0.75 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Screen prep",
+          "mh": 0,
+          "lh": 0,
+          "c": 0,
+          "fx": "digital route — no screens, 0 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Print — Epson S80600",
+          "mh": 0.7522321428571429,
+          "lh": 0.42578125,
+          "c": 34.77071875,
+          "fx": "70.31 ft² ÷ 140 ft²/hr + 0.25 setup",
+          "who": "Digital press operator",
+          "lr": 58.5
+        },
+        {
+          "n": "Overlaminate — GFP 463TH",
+          "mh": 0.18255208333333334,
+          "lh": 0.18255208333333334,
+          "c": 6.73124296875,
+          "fx": "0.15 setup + 15.63 ft ÷ 8 ft/min",
+          "who": "Laminator operator",
+          "lr": 34.775
+        },
+        {
+          "n": "Die cut — through",
+          "mh": 0.4387066871244087,
+          "lh": 0.40929868303286027,
+          "c": 19.722782511674918,
+          "fx": "192 ft path ÷ (7.9 in/s × 0.55) + 5 panel loads + 0.25 setup",
+          "who": "Die cutter operator",
+          "lr": 40.300000000000004
+        },
+        {
+          "n": "Weed &amp; inspect",
+          "mh": 0,
+          "lh": 0.016666666666666666,
+          "c": 0.50375,
+          "fx": "10 × 6 sec",
+          "who": "Inspection / shipping",
+          "lr": 30.225
+        }
+      ],
+      "mh": 1.373490913314885,
+      "lh": 1.7842986830328602,
+      "conv": 93.90349423042491,
+      "base": 199.5707692304249,
+      "film": {
+        "id": "ij35c54",
+        "n": "3M IJ35C matte white w/Comply 54\"",
+        "v": "Grimco · 53 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 230.46,
+        "psf": 0.34142222222222224
+      },
+      "rig": null,
+      "pw": 20,
+      "ph": 30,
+      "warn": [],
+      "info": []
+    },
+    "warn_nest_exceeds_bed": {
+      "L": {
+        "id": "L1",
+        "desc": "",
+        "w": 10,
+        "h": 40,
+        "qty": 10,
+        "con": "1",
+        "dcut": "through",
+        "art": "new"
+      },
+      "w": 10,
+      "h": 40,
+      "qty": 10,
+      "two": false,
+      "backed": false,
+      "across": 4,
+      "rot": false,
+      "rows": 3,
+      "runFt": 13.083333333333334,
+      "prodFt": 10.083333333333334,
+      "webSqft": 58.875,
+      "partSqft": 27.77777777777778,
+      "yld": 0.4718093890068413,
+      "widthUse": 0.7546296296296297,
+      "printUse": 0.8858695652173914,
+      "lengthUse": 0.7707006369426752,
+      "usable": 46,
+      "perSheet": 4,
+      "sheets": 0,
+      "panels": 3,
+      "splitK": 1,
+      "sheetW": 0,
+      "sheetH": 0,
+      "mats": [
+        {
+          "n": "3M IJ35C matte white w/Comply 54\"",
+          "v": "Grimco · 53 rl",
+          "q": "13.08 lin ft @ 54\"",
+          "u": "$1.54/lin ft",
+          "c": 20.101233333333333,
+          "src": "po"
+        },
+        {
+          "n": "3M 8519 luster overlam 54\"",
+          "v": "Grimco · 41 rl",
+          "q": "13.08 lin ft @ 54\"",
+          "u": "$4.13/lin ft",
+          "c": 53.98968333333333,
+          "src": "po"
+        },
+        {
+          "n": "UltraChrome GS3 ink",
+          "v": "North Light Color · $216/cart",
+          "q": "26 ml @ 75%",
+          "u": "$0.309/ml",
+          "c": 8.10075,
+          "src": "po"
+        }
+      ],
+      "matSub": 82.19166666666666,
+      "spoilC": 4.109583333333333,
+      "matTotal": 86.30125,
+      "wasteCost": 39.134126543209874,
+      "rollCost": 74.09091666666666,
+      "ops": [
+        {
+          "n": "Prepress / artwork",
+          "mh": 0,
+          "lh": 0.75,
+          "c": 32.175,
+          "fx": "new graphic → 0.75 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Screen prep",
+          "mh": 0,
+          "lh": 0,
+          "c": 0,
+          "fx": "digital route — no screens, 0 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Print — Epson S80600",
+          "mh": 0.6705357142857142,
+          "lh": 0.3971875,
+          "c": 32.0268625,
+          "fx": "58.88 ft² ÷ 140 ft²/hr + 0.25 setup",
+          "who": "Digital press operator",
+          "lr": 58.5
+        },
+        {
+          "n": "Overlaminate — GFP 463TH",
+          "mh": 0.17725694444444445,
+          "lh": 0.17725694444444445,
+          "c": 6.5359953125,
+          "fx": "0.15 setup + 13.08 ft ÷ 8 ft/min",
+          "who": "Laminator operator",
+          "lr": 34.775
+        },
+        {
+          "n": "Die cut — through",
+          "mh": 0.422040020457742,
+          "lh": 0.3926320163661936,
+          "c": 18.928480924373332,
+          "fx": "192 ft path ÷ (7.9 in/s × 0.55) + 3 panel loads + 0.25 setup",
+          "who": "Die cutter operator",
+          "lr": 40.300000000000004
+        },
+        {
+          "n": "Weed &amp; inspect",
+          "mh": 0,
+          "lh": 0.016666666666666666,
+          "c": 0.50375,
+          "fx": "10 × 6 sec",
+          "who": "Inspection / shipping",
+          "lr": 30.225
+        }
+      ],
+      "mh": 1.2698326791879007,
+      "lh": 1.7337431274773047,
+      "conv": 90.17008873687334,
+      "base": 176.47133873687335,
+      "film": {
+        "id": "ij35c54",
+        "n": "3M IJ35C matte white w/Comply 54\"",
+        "v": "Grimco · 53 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 230.46,
+        "psf": 0.34142222222222224
+      },
+      "rig": null,
+      "pw": 10,
+      "ph": 40,
+      "warn": [
+        "The nest is 40.75\" × 40.00\" against a 47.2×36\" cutter bed — it will not fit the flatbed as laid out."
+      ],
       "info": []
     },
     "quote_no_substrate_multiline": {

@@ -19,7 +19,7 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
 'use strict';
 
-const MODEL_VERSION = '1.1.0';
+const MODEL_VERSION = '1.2.0';
 
 /* ---------------- material library (real purchase prices) ---------------- */
 const R=(w,lenFt,cost)=>({rollW:w,lenFt,cost,psf:cost/(w/12*lenFt)});
@@ -92,7 +92,7 @@ const ROLES=[
 const PARAMS=[
  {g:'Press — Epson S80600', k:'gutter',    l:'Gutter between parts (in)',       d:0.25, s:'shop'},
  {g:'Press — Epson S80600', k:'edge',      l:'Unprintable edge each side (in)', d:0.5,  s:'spec'},
- {g:'Press — Epson S80600', k:'maxPrintW', l:'Max printed width used (in)',     d:46,   s:'shop'},
+ {g:'Die cut — FCX2000', k:'maxPrintW', l:'Max printed width when die cutting (in)', d:46, s:'shop'},
  {g:'Press — Epson S80600', k:'leadFt',    l:'Leader + trailer waste per run (ft)', d:3, s:'shop'},
  {g:'Press — Epson S80600', k:'printSetup',l:'Load, RIP &amp; colour check (hr)',   d:0.25, s:'shop'},
  {g:'Press — Epson S80600', k:'inkMl',     l:'Ink at 100% coverage (ml/sq ft)', d:1.2,  s:'shop'},
@@ -123,6 +123,7 @@ const PARAMS=[
  {g:'Labor, finishing &amp; rates', k:'artNew',   l:'Prepress — new graphic (hr)', d:0.75, s:'shop'},
  {g:'Labor, finishing &amp; rates', k:'artRep',   l:'Prepress — repeat (hr)',      d:0.10, s:'shop'},
  {g:'Labor, finishing &amp; rates', k:'weedSec',  l:'Weed &amp; inspect (sec/piece)',  d:6,   s:'shop'},
+ {g:'Labor, finishing &amp; rates', k:'trimMin',  l:'Hand trim when not die cut (min/piece)', d:3, s:'shop'},
  {g:'Labor, finishing &amp; rates', k:'shipHr',   l:'Pack &amp; ship per QUOTE (hr)',  d:0.2, s:'leg'},
  {g:'Labor, finishing &amp; rates', k:'spoil',    l:'Material spoilage (%)',       d:5,    s:'shop'},
  {g:'Labor, finishing &amp; rates', k:'margin',   l:'Target gross margin (%)',     d:35,   s:'shop'},
@@ -226,7 +227,12 @@ function calcLine(ctx,L,qtyOverride){
   const speed=+stock.mode, cov=+stock.cov, g=+P.gutter;
   const warn=[], info=[];
 
-  const usable=Math.min(film.rollW-2*(+P.edge), +P.maxPrintW);
+  /* maxPrintW is the DIE CUTTER's limit, not the press's — confirmed by the shop
+     15 Sept 2026. Work that never reaches the flatbed is limited only by the roll,
+     which is what lets a wall graphic run the full 60" width. */
+  const cuts = L.dcut!=='none';
+  const rollUsable = film.rollW-2*(+P.edge);
+  const usable = cuts? Math.min(rollUsable, +P.maxPrintW) : rollUsable;
   const acrossOf=pw=>Math.floor((usable+g)/(pw+g));
   const a1=acrossOf(w), a2=acrossOf(h);
   const rot=a2>a1, pw=rot?h:w, ph=rot?w:h, across=Math.max(a1,a2);
@@ -316,13 +322,26 @@ function calcLine(ctx,L,qtyOverride){
         `${sheets} sheets × ${P.mountMin} min — machine time, not just handling`);
   }
   if(splitK>1) add('Pre-cut to cutter bed',+P.precutHr,+P.precutHr,ctx.machRate('cut'),'opPrecut',`flat ${f2(+P.precutHr)} hr — sheet exceeds bed`);
-  const passes=L.dcut==='through'?(+P.passThru):1;
-  const cutSetup=L.dcut==='through'?(+P.setupThru):(+P.setupKiss);
-  const pathIn=qty*2*(w+h)*(+P.pathFac)*passes;
-  const cutRun=pathIn/((+P.cutIps)*3600)/(+P.cutEff);
-  const loadHr=panels*(+P.loadMin)/60;
-  add(`Die cut — ${L.dcut==='through'?'through':'kiss'}`,cutSetup+cutRun+loadHr,cutSetup+loadHr+cutRun*(+P.cutAtt),ctx.machRate('cut'),'opCut',
-      `${(pathIn/12).toFixed(0)} ft path ÷ (${P.cutIps} in/s × ${P.cutEff}) + ${panels} panel loads + ${f2(cutSetup)} setup`);
+  if(cuts){
+    const passes=L.dcut==='through'?(+P.passThru):1;
+    const cutSetup=L.dcut==='through'?(+P.setupThru):(+P.setupKiss);
+    const pathIn=qty*2*(w+h)*(+P.pathFac)*passes;
+    const cutRun=pathIn/((+P.cutIps)*3600)/(+P.cutEff);
+    const loadHr=panels*(+P.loadMin)/60;
+    add(`Die cut — ${L.dcut==='through'?'through':'kiss'}`,cutSetup+cutRun+loadHr,cutSetup+loadHr+cutRun*(+P.cutAtt),ctx.machRate('cut'),'opCut',
+        `${(pathIn/12).toFixed(0)} ft path ÷ (${P.cutIps} in/s × ${P.cutEff}) + ${panels} panel loads + ${f2(cutSetup)} setup`);
+    /* Nothing else checks this on the roll path. The sheet path splits an oversized
+       sheet into panels; a roll nest longer or wider than the bed just silently
+       priced a cut that cannot happen. Warn rather than error — it changes no cost,
+       and turning it into a refusal is a separate decision. */
+    const nestW=across*(pw+g)-g;
+    if(ph>(+P.bedH)+1e-9 || nestW>(+P.bedW)+1e-9)
+      warn.push(`The nest is ${f2(nestW)}" × ${f2(ph)}" against a ${P.bedW}×${P.bedH}" cutter bed — it will not fit the flatbed as laid out.`);
+  } else {
+    /* Trimmed by hand instead — straightedge on a table, no machine time. */
+    const trimHr=qty*(+P.trimMin)/60;
+    add('Hand trim — no die cut',0,trimHr,0,'opCut',`${qty} × ${P.trimMin} min by hand`);
+  }
   add('Weed &amp; inspect',0,qty*(+P.weedSec)/3600,0,'opWeed',`${qty} × ${P.weedSec} sec`);
 
   const mh=ops.reduce((s,o)=>s+o.mh,0), lh=ops.reduce((s,o)=>s+o.lh,0);

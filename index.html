@@ -436,7 +436,7 @@ button.solid{border:1px solid var(--accent); background:var(--accent); color:#ff
 </div>
 
 
-<script src="model.js"></script>
+<script src="model.js?v=1.2.0"></script>
 <script>
 "use strict";
 
@@ -828,6 +828,7 @@ function lineRowHtml(L,i){
     <td><select data-f="dcut" aria-label="Die cut">
       <option value="through"${L.dcut==='through'?' selected':''}>Through</option>
       <option value="kiss"${L.dcut==='kiss'?' selected':''}>Kiss</option>
+      <option value="none"${L.dcut==='none'?' selected':''}>None — hand trim</option>
     </select></td>
     <td><select data-f="art" aria-label="Artwork">
       <option value="new"${L.art==='new'?' selected':''}>New</option>

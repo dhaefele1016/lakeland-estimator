@@ -244,6 +244,47 @@ module.exports = [
     stock: { rig2: 'none' },
     lines: [L({ w: 20, h: 20, qty: 5, con: '2' })],
   },
+  // ---- no die cut, hand trimmed (added with MODEL_VERSION 1.2.0) -----------
+  // The 46" maxPrintW is the DIE CUTTER's limit, not the press's. Work that never
+  // reaches the flatbed is limited only by the roll, and is trimmed by hand instead.
+  {
+    id: 'dcut_none_wall_size',
+    note: 'The real job that exposed this: 60.75 × 55 three-layer decal, no substrate, '
+        + 'no cutting, on the 60" roll. Refused outright before 1.2.0 because 55 > 46.',
+    call: 'calcLine',
+    stock: { film2: 'ij35c60', back2: 'o651w', adh2: '9505_24', rig2: 'none' },
+    lines: [L({ desc: '3-layer decal', w: 60.75, h: 55, qty: 1, con: '3', dcut: 'none' })],
+  },
+  {
+    id: 'dcut_none_lifts_width',
+    note: 'A 50" part on a 60" roll with no die cut — proves the width ceiling comes '
+        + 'from the roll (59") rather than the 46" cutter limit.',
+    call: 'calcLine',
+    stock: { film1: 'ij35c60' },
+    lines: [L({ w: 50, h: 20, qty: 10, dcut: 'none' })],
+  },
+  {
+    id: 'dcut_none_vs_through',
+    note: 'Same 30 × 20 part as through-cut, so the pair pins what dropping the die cut '
+        + 'and adding the hand trim is worth. Compare with dcut_through_pair.',
+    call: 'calcLine',
+    lines: [L({ w: 30, h: 20, qty: 10, dcut: 'none' })],
+  },
+  {
+    id: 'dcut_through_pair',
+    note: 'The through-cut half of the pair above. Unchanged behaviour; here so the '
+        + 'comparison is pinned rather than recomputed by hand.',
+    call: 'calcLine',
+    lines: [L({ w: 30, h: 20, qty: 10, dcut: 'through' })],
+  },
+  {
+    id: 'warn_nest_exceeds_bed',
+    note: 'A die-cut part 40" long against a 36" bed depth. Nothing checked this on the '
+        + 'roll path before 1.2.0 — it priced a cut that could not happen. Warns now.',
+    call: 'calcLine',
+    lines: [L({ w: 10, h: 40, qty: 10, dcut: 'through' })],
+  },
+
   {
     id: 'quote_no_substrate_multiline',
     note: 'Three mixed-construction lines with rigid None — checks the pack-and-ship split '

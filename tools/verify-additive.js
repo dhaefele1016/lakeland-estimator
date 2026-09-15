@@ -47,7 +47,13 @@ if (scenarioDiffs.length) {
 
 // 2. Table changes must be exactly the intended insertions and nothing else.
 const pd = golden.page_defaults;
-const EXPECTED_ADDITIONS = { RIGIDS: ['none'] };
+/* Describes THIS change only. Additions from earlier commits are already in the
+   fixtures and are not re-proved here — the commit that made them recorded that. */
+const EXPECTED_ADDITIONS = { PARAMS: ['trimMin'] };
+/* Deliberate edits to existing rows, as "<table>.<key>.<field>". Anything not listed
+   here that differs is a failure, so an accidental edit cannot hide behind these. */
+const EXPECTED_EDITS = ['PARAMS.maxPrintW.l', 'PARAMS.maxPrintW.g'];
+const EXPECTED_NEW_DEF_KEYS = ['trimMin'];
 
 /* Once the fixtures have been regenerated they already contain the added rows, so
    the pre-change baseline no longer exists and additivity cannot be re-proved.
@@ -65,24 +71,42 @@ if (stale) {
 
 for (const k of ['DEF', 'CREW', 'ROLES', 'MACH', 'FILMS', 'OLAMS', 'ADHS', 'RIGIDS', 'PARAMS']) {
   const now = j(M[k]), before = pd[k];
-  const added = stale ? [] : (EXPECTED_ADDITIONS[k] || []);
+  let added = stale ? [] : (EXPECTED_ADDITIONS[k] || []);
+  // Already in the fixtures? Then it landed in an earlier commit — compare plainly.
+  if (added.length && Array.isArray(before) &&
+      added.every((id) => before.some((x) => x && (x.id || x.k) === id))) added = [];
   if (!Array.isArray(now)) {                     // DEF is an object
-    const d = diff(now, before, k, []);
+    const pruned = Object.assign({}, now);
+    if (!stale) for (const nk of EXPECTED_NEW_DEF_KEYS) delete pruned[nk];
+    const d = diff(stale ? now : pruned, before, k, []);
     if (d.length) { console.error(`✗ ${k} changed unexpectedly:`); d.slice(0, 10).forEach((x) => console.error('    ' + x)); bad++; }
     else console.log(`✓ ${k} unchanged`);
     continue;
   }
   // Drop the deliberately added entries, then the remainder must match exactly.
-  const trimmed = now.filter((x) => !added.includes(x && x.id));
-  const d = diff(j(trimmed), before, k, []);
+  const trimmed = now.filter((x) => !added.includes(x && (x.id || x.k)));
+  let d = diff(j(trimmed), before, k, []);
+  if (!stale && d.length) {
+    const allowed = new Set(EXPECTED_EDITS);
+    const kept = [];
+    for (const line of d) {
+      // "PARAMS[2].l: expected ..." -> resolve the index back to that row's key
+      const m = line.match(/^(\w+)\[(\d+)\]\.(\w+):/);
+      const key = m && before[+m[2]] && (before[+m[2]].id || before[+m[2]].k);
+      if (m && key && allowed.has(`${m[1]}.${key}.${m[3]}`)) continue;
+      kept.push(line);
+    }
+    if (kept.length !== d.length) console.log(`  · ${k}: ${d.length - kept.length} deliberate edit(s) allowed (${EXPECTED_EDITS.join(', ')})`);
+    d = kept;
+  }
   if (d.length) {
     console.error(`✗ ${k} changed beyond the intended addition${added.length ? ' of ' + added.join(', ') : ''}:`);
     d.slice(0, 10).forEach((x) => console.error('    ' + x));
     bad++;
   } else if (added.length) {
-    const rows = now.filter((x) => added.includes(x && x.id));
+    const rows = now.filter((x) => added.includes(x && (x.id || x.k)));
     console.log(`✓ ${k}: ${before.length} → ${now.length}, the only change being ` +
-                rows.map((r) => `{id:"${r.id}", n:"${r.n}"}`).join(', '));
+                rows.map((r) => `{${r.id ? 'id' : 'k'}:"${r.id || r.k}"}`).join(', '));
   } else {
     console.log(`✓ ${k} unchanged`);
   }
