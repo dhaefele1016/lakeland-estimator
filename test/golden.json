@@ -1,9 +1,9 @@
 {
-  "captured_at": "2026-09-15T20:23:11.148Z",
+  "captured_at": "2026-09-16T13:09:24.094Z",
   "source_file": "index.html",
-  "source_sha256": "3a2d884a9b1c39f5ce27611b46febb0591b85821c45dd6d62641f5e3d383c9d0",
+  "source_sha256": "54cc2effb2daae78a5eaecf26dfb4021e40dd63e8cf2f9b0360ce4e06ba56990",
   "capture_method": "chromium via playwright, page globals, file:// load",
-  "scenario_count": 35,
+  "scenario_count": 36,
   "page_defaults": {
     "DEF": {
       "gutter": 0.25,
@@ -36,7 +36,8 @@
       "artNew": 0.75,
       "artRep": 0.1,
       "weedSec": 6,
-      "trimMin": 3,
+      "trimHandleMin": 2,
+      "trimIpm": 18,
       "shipHr": 0.2,
       "spoil": 5,
       "margin": 35,
@@ -78,6 +79,7 @@
       "opMount": "terry",
       "opPrecut": "terry",
       "opCut": "mark",
+      "opTrim": "terry",
       "opWeed": "karen",
       "opShip": "karen"
     },
@@ -167,6 +169,11 @@
         "k": "opCut",
         "l": "Die cut",
         "d": "mark"
+      },
+      {
+        "k": "opTrim",
+        "l": "Hand trim",
+        "d": "terry"
       },
       {
         "k": "opWeed",
@@ -542,7 +549,8 @@
       "artNew",
       "artRep",
       "weedSec",
-      "trimMin",
+      "trimHandleMin",
+      "trimIpm",
       "shipHr",
       "spoil",
       "margin",
@@ -584,6 +592,7 @@
       "opMount",
       "opPrecut",
       "opCut",
+      "opTrim",
       "opWeed",
       "opShip"
     ],
@@ -803,9 +812,16 @@
       },
       {
         "g": "Labor, finishing &amp; rates",
-        "k": "trimMin",
-        "l": "Hand trim when not die cut (min/piece)",
-        "d": 3,
+        "k": "trimHandleMin",
+        "l": "Hand trim — place &amp; square each piece (min)",
+        "d": 2,
+        "s": "shop"
+      },
+      {
+        "g": "Labor, finishing &amp; rates",
+        "k": "trimIpm",
+        "l": "Hand trim — edge cut speed (in/min)",
+        "d": 18,
         "s": "shop"
       },
       {
@@ -1098,6 +1114,14 @@
         "k": "opCut",
         "l": "Die cut",
         "d": "mark",
+        "s": "shop",
+        "type": "sel"
+      },
+      {
+        "g": "Who runs what",
+        "k": "opTrim",
+        "l": "Hand trim",
+        "d": "terry",
         "s": "shop",
         "type": "sel"
       },
@@ -7789,11 +7813,11 @@
         {
           "n": "Hand trim — no die cut",
           "mh": 0,
-          "lh": 0.05,
-          "c": 2.015,
-          "fx": "1 × 3 min by hand",
-          "who": "Die cutter operator",
-          "lr": 40.300000000000004
+          "lh": 0.24768518518518517,
+          "c": 8.613252314814813,
+          "fx": "1 × 2 min handling + 19 ft edge ÷ 18 in/min",
+          "who": "Laminator operator",
+          "lr": 34.775
         },
         {
           "n": "Weed &amp; inspect",
@@ -7806,9 +7830,9 @@
         }
       ],
       "mh": 0.873201884920635,
-      "lh": 1.4867361111111113,
-      "conv": 74.09130642361112,
-      "base": 154.996499093316,
+      "lh": 1.6844212962962963,
+      "conv": 80.68955873842593,
+      "base": 161.5947514081308,
       "film": {
         "id": "ij35c60",
         "n": "3M IJ35C matte white w/Comply 60\"",
@@ -7932,11 +7956,11 @@
         {
           "n": "Hand trim — no die cut",
           "mh": 0,
-          "lh": 0.5,
-          "c": 20.150000000000002,
-          "fx": "10 × 3 min by hand",
-          "who": "Die cutter operator",
-          "lr": 40.300000000000004
+          "lh": 1.6296296296296295,
+          "c": 56.670370370370364,
+          "fx": "10 × 2 min handling + 117 ft edge ÷ 18 in/min",
+          "who": "Laminator operator",
+          "lr": 34.775
         },
         {
           "n": "Weed &amp; inspect",
@@ -7949,9 +7973,9 @@
         }
       ],
       "mh": 1.3055679563492064,
-      "lh": 2.0160590277777777,
-      "conv": 106.84092005208333,
-      "base": 379.2402325520833,
+      "lh": 3.1456886574074074,
+      "conv": 143.3612904224537,
+      "base": 415.76060292245364,
       "film": {
         "id": "ij35c60",
         "n": "3M IJ35C matte white w/Comply 60\"",
@@ -8074,11 +8098,11 @@
         {
           "n": "Hand trim — no die cut",
           "mh": 0,
-          "lh": 0.5,
-          "c": 20.150000000000002,
-          "fx": "10 × 3 min by hand",
-          "who": "Die cutter operator",
-          "lr": 40.300000000000004
+          "lh": 1.2592592592592593,
+          "c": 43.79074074074074,
+          "fx": "10 × 2 min handling + 83 ft edge ÷ 18 in/min",
+          "who": "Laminator operator",
+          "lr": 34.775
         },
         {
           "n": "Weed &amp; inspect",
@@ -8091,9 +8115,9 @@
         }
       ],
       "mh": 0.9347842261904762,
-      "lh": 1.875,
-      "conv": 94.33071171875,
-      "base": 199.99798671874998,
+      "lh": 2.6342592592592595,
+      "conv": 117.97145245949073,
+      "base": 223.63872745949072,
       "film": {
         "id": "ij35c54",
         "n": "3M IJ35C matte white w/Comply 54\"",
@@ -8248,6 +8272,148 @@
       "ph": 30,
       "warn": [],
       "info": []
+    },
+    "dcut_none_small_part": {
+      "L": {
+        "id": "L1",
+        "desc": "",
+        "w": 6,
+        "h": 4,
+        "qty": 20,
+        "con": "1",
+        "dcut": "none",
+        "art": "new"
+      },
+      "w": 6,
+      "h": 4,
+      "qty": 20,
+      "two": false,
+      "backed": false,
+      "across": 12,
+      "rot": true,
+      "rows": 2,
+      "runFt": 4.0625,
+      "prodFt": 1.0625,
+      "webSqft": 18.28125,
+      "partSqft": 3.3333333333333335,
+      "yld": 0.18233618233618235,
+      "widthUse": 0.9398148148148148,
+      "printUse": 0.9575471698113207,
+      "lengthUse": 0.26153846153846155,
+      "usable": 53,
+      "perSheet": 60,
+      "sheets": 0,
+      "panels": 1,
+      "splitK": 1,
+      "sheetW": 0,
+      "sheetH": 0,
+      "mats": [
+        {
+          "n": "3M IJ35C matte white w/Comply 54\"",
+          "v": "Grimco · 53 rl",
+          "q": "4.06 lin ft @ 54\"",
+          "u": "$1.54/lin ft",
+          "c": 6.241625,
+          "src": "po"
+        },
+        {
+          "n": "3M 8519 luster overlam 54\"",
+          "v": "Grimco · 41 rl",
+          "q": "4.06 lin ft @ 54\"",
+          "u": "$4.13/lin ft",
+          "c": 16.7643125,
+          "src": "po"
+        },
+        {
+          "n": "UltraChrome GS3 ink",
+          "v": "North Light Color · $216/cart",
+          "q": "3 ml @ 75%",
+          "u": "$0.309/ml",
+          "c": 0.97209,
+          "src": "po"
+        }
+      ],
+      "matSub": 23.9780275,
+      "spoilC": 1.198901375,
+      "matTotal": 25.176928874999998,
+      "wasteCost": 18.811122685185182,
+      "rollCost": 23.005937499999998,
+      "ops": [
+        {
+          "n": "Prepress / artwork",
+          "mh": 0,
+          "lh": 0.75,
+          "c": 32.175,
+          "fx": "new graphic → 0.75 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Screen prep",
+          "mh": 0,
+          "lh": 0,
+          "c": 0,
+          "fx": "digital route — no screens, 0 hr",
+          "who": "Production artist",
+          "lr": 42.9
+        },
+        {
+          "n": "Print — Epson S80600",
+          "mh": 0.38058035714285715,
+          "lh": 0.295703125,
+          "c": 22.288421874999997,
+          "fx": "18.28 ft² ÷ 140 ft²/hr + 0.25 setup",
+          "who": "Digital press operator",
+          "lr": 58.5
+        },
+        {
+          "n": "Overlaminate — GFP 463TH",
+          "mh": 0.15846354166666665,
+          "lh": 0.15846354166666665,
+          "c": 5.843026171875,
+          "fx": "0.15 setup + 4.06 ft ÷ 8 ft/min",
+          "who": "Laminator operator",
+          "lr": 34.775
+        },
+        {
+          "n": "Hand trim — no die cut",
+          "mh": 0,
+          "lh": 1.037037037037037,
+          "c": 36.062962962962956,
+          "fx": "20 × 2 min handling + 33 ft edge ÷ 18 in/min",
+          "who": "Laminator operator",
+          "lr": 34.775
+        },
+        {
+          "n": "Weed &amp; inspect",
+          "mh": 0,
+          "lh": 0.03333333333333333,
+          "c": 1.0075,
+          "fx": "20 × 6 sec",
+          "who": "Inspection / shipping",
+          "lr": 30.225
+        }
+      ],
+      "mh": 0.5390438988095239,
+      "lh": 2.274537037037037,
+      "conv": 97.37691100983794,
+      "base": 122.55383988483794,
+      "film": {
+        "id": "ij35c54",
+        "n": "3M IJ35C matte white w/Comply 54\"",
+        "v": "Grimco · 53 rl",
+        "rollW": 54,
+        "lenFt": 150,
+        "cost": 230.46,
+        "psf": 0.34142222222222224
+      },
+      "rig": null,
+      "pw": 4,
+      "ph": 6,
+      "warn": [],
+      "info": [
+        "82% of the film is waste on this line. 96% of the 53\" printable width is used, and a 3 ft leader sits on 1.06 ft of product."
+      ]
     },
     "warn_nest_exceeds_bed": {
       "L": {

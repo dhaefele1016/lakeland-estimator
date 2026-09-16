@@ -1,11 +1,16 @@
 #!/usr/bin/env node
-/* Prove a model change is additive: that no existing golden scenario moved, and
- * that the only table difference is the rows deliberately added.
+/* Check a model change against the CURRENT fixtures before regenerating them:
+ * that the scenarios which moved are exactly the ones intended to move, and that
+ * the tables changed in exactly the intended ways.
  *
  *   node tools/verify-additive.js
  *
- * Run BEFORE regenerating test/golden.json. Once the fixtures are regenerated the
- * old expectations are gone and this can no longer be asked.
+ * Run BEFORE regenerating test/golden.json — afterwards the old expectations are
+ * gone and the question can no longer be asked.
+ *
+ * Fill in the four EXPECTED_* blocks to describe THIS change only. Changes from
+ * earlier commits are already in the fixtures; the commits that made them recorded
+ * their own verification. An empty EXPECTED_MOVED means "purely additive".
  */
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
@@ -14,13 +19,24 @@ const golden = require(path.join(ROOT, 'test', 'golden.json'));
 const scenarios = require(path.join(ROOT, 'test', 'scenarios.js'));
 const { diff } = require(path.join(ROOT, 'test', 'compare.js'));
 
+// ---- what this change is meant to do --------------------------------------
+/* Scenarios whose results are SUPPOSED to move. Anything else that moves is a
+   failure; anything listed here that does NOT move is also a failure, because a
+   stale list quietly stops protecting the scenarios still on it. */
+const EXPECTED_MOVED = ['dcut_none_wall_size', 'dcut_none_lifts_width', 'dcut_none_vs_through'];
+const EXPECTED_ADDITIONS = { ROLES: ['opTrim'], PARAMS: ['trimHandleMin', 'trimIpm', 'opTrim'] };
+const EXPECTED_REMOVALS = { PARAMS: ['trimMin'] };
+const EXPECTED_EDITS = [];                       // "<table>.<key>.<field>"
+const EXPECTED_DEF_ADDED = ['trimHandleMin', 'trimIpm', 'opTrim'];
+const EXPECTED_DEF_REMOVED = ['trimMin'];
+
 const j = (x) => JSON.parse(JSON.stringify(x));
 let bad = 0;
 
-// 1. Every scenario the old fixtures knew about must produce byte-identical output.
-const scenarioDiffs = [];
+// ---- 1. scenarios ----------------------------------------------------------
+const moved = [], stayed = [], unexpected = [];
 for (const sc of scenarios) {
-  if (!golden.results[sc.id]) continue;          // new scenario, nothing to compare
+  if (!golden.results[sc.id]) continue;            // new scenario, nothing to compare
   const ctx = M.createContext({ params: sc.params, stock: sc.stock, custom: sc.custom });
   let got;
   switch (sc.call) {
@@ -34,87 +50,76 @@ for (const sc of scenarios) {
     case 'betterQty':
       got = M.betterQty(ctx, sc.lines[0], sc.qtyOverride); break;
   }
-  diff(j(got), golden.results[sc.id], sc.id, scenarioDiffs);
+  const d = diff(j(got), golden.results[sc.id], sc.id, []);
+  if (d.length) { moved.push({ id: sc.id, d }); if (!EXPECTED_MOVED.includes(sc.id)) unexpected.push({ id: sc.id, d }); }
+  else stayed.push(sc.id);
 }
-const compared = scenarios.filter((s) => golden.results[s.id]).length;
-if (scenarioDiffs.length) {
-  console.error(`✗ ${scenarioDiffs.length} existing scenario result(s) MOVED — this change is not additive\n`);
-  for (const d of scenarioDiffs.slice(0, 30)) console.error('  ' + d);
+
+if (unexpected.length) {
+  console.error(`✗ ${unexpected.length} scenario(s) moved that should not have:\n`);
+  for (const u of unexpected) { console.error('  ' + u.id); u.d.slice(0, 4).forEach((x) => console.error('      ' + x)); }
   bad++;
 } else {
-  console.log(`✓ all ${compared} pre-existing scenarios produce byte-identical results`);
+  console.log(`✓ ${stayed.length} scenario(s) unchanged, as intended`);
 }
 
-// 2. Table changes must be exactly the intended insertions and nothing else.
+const didNotMove = EXPECTED_MOVED.filter((id) => golden.results[id] && !moved.some((m) => m.id === id));
+if (didNotMove.length) {
+  console.error(`✗ listed as expected-to-move but did not move: ${didNotMove.join(', ')}`);
+  console.error('  Either the change did not take effect, or the list is stale and is no longer protecting these.');
+  bad++;
+} else if (EXPECTED_MOVED.length) {
+  console.log(`✓ ${moved.length} scenario(s) moved, exactly the ones intended:`);
+  for (const m of moved) console.log(`    ${m.id} — ${m.d.length} field(s) differ`);
+}
+
+// ---- 2. tables -------------------------------------------------------------
 const pd = golden.page_defaults;
-/* Describes THIS change only. Additions from earlier commits are already in the
-   fixtures and are not re-proved here — the commit that made them recorded that. */
-const EXPECTED_ADDITIONS = { PARAMS: ['trimMin'] };
-/* Deliberate edits to existing rows, as "<table>.<key>.<field>". Anything not listed
-   here that differs is a failure, so an accidental edit cannot hide behind these. */
-const EXPECTED_EDITS = ['PARAMS.maxPrintW.l', 'PARAMS.maxPrintW.g'];
-const EXPECTED_NEW_DEF_KEYS = ['trimMin'];
-
-/* Once the fixtures have been regenerated they already contain the added rows, so
-   the pre-change baseline no longer exists and additivity cannot be re-proved.
-   Say that plainly rather than reporting a failure — a tool that cries wolf after
-   its own window has closed gets ignored when it matters. */
-const stale = Object.entries(EXPECTED_ADDITIONS).every(([k, ids]) =>
-  Array.isArray(pd[k]) && ids.every((id) => pd[k].some((x) => x && x.id === id)));
-if (stale) {
-  console.log('\n  note: test/golden.json already contains ' +
-    Object.entries(EXPECTED_ADDITIONS).map(([k, ids]) => ids.map((i) => k + '.' + i).join(', ')).join('; ') +
-    ',\n  so the pre-change baseline is gone and additivity cannot be re-proved from here.');
-  console.log('  Falling back to a plain equality check against the current fixtures.');
-  console.log('  The additive result was recorded in the commit that made the change.\n');
-}
+const keyOf = (x) => x && (x.id || x.k);
 
 for (const k of ['DEF', 'CREW', 'ROLES', 'MACH', 'FILMS', 'OLAMS', 'ADHS', 'RIGIDS', 'PARAMS']) {
   const now = j(M[k]), before = pd[k];
-  let added = stale ? [] : (EXPECTED_ADDITIONS[k] || []);
-  // Already in the fixtures? Then it landed in an earlier commit — compare plainly.
-  if (added.length && Array.isArray(before) &&
-      added.every((id) => before.some((x) => x && (x.id || x.k) === id))) added = [];
-  if (!Array.isArray(now)) {                     // DEF is an object
-    const pruned = Object.assign({}, now);
-    if (!stale) for (const nk of EXPECTED_NEW_DEF_KEYS) delete pruned[nk];
-    const d = diff(stale ? now : pruned, before, k, []);
-    if (d.length) { console.error(`✗ ${k} changed unexpectedly:`); d.slice(0, 10).forEach((x) => console.error('    ' + x)); bad++; }
-    else console.log(`✓ ${k} unchanged`);
+  if (!before) { console.log(`· ${k} not in fixtures, skipped`); continue; }
+
+  if (!Array.isArray(now)) {                       // DEF is an object
+    const a = Object.assign({}, now), b = Object.assign({}, before);
+    for (const key of EXPECTED_DEF_ADDED) delete a[key];
+    for (const key of EXPECTED_DEF_REMOVED) delete b[key];
+    const d = diff(a, b, k, []);
+    if (d.length) { console.error(`✗ ${k} changed beyond the intended keys:`); d.slice(0, 8).forEach((x) => console.error('    ' + x)); bad++; }
+    else console.log(`✓ ${k}: ${Object.keys(before).length} → ${Object.keys(now).length} keys, only the intended additions and removals`);
     continue;
   }
-  // Drop the deliberately added entries, then the remainder must match exactly.
-  const trimmed = now.filter((x) => !added.includes(x && (x.id || x.k)));
-  let d = diff(j(trimmed), before, k, []);
-  if (!stale && d.length) {
+
+  const added = EXPECTED_ADDITIONS[k] || [], removed = EXPECTED_REMOVALS[k] || [];
+  const a = now.filter((x) => !added.includes(keyOf(x)));
+  const b = before.filter((x) => !removed.includes(keyOf(x)));
+  let d = diff(j(a), b, k, []);
+
+  if (d.length && EXPECTED_EDITS.length) {         // allow only the listed field edits
     const allowed = new Set(EXPECTED_EDITS);
-    const kept = [];
-    for (const line of d) {
-      // "PARAMS[2].l: expected ..." -> resolve the index back to that row's key
+    d = d.filter((line) => {
       const m = line.match(/^(\w+)\[(\d+)\]\.(\w+):/);
-      const key = m && before[+m[2]] && (before[+m[2]].id || before[+m[2]].k);
-      if (m && key && allowed.has(`${m[1]}.${key}.${m[3]}`)) continue;
-      kept.push(line);
-    }
-    if (kept.length !== d.length) console.log(`  · ${k}: ${d.length - kept.length} deliberate edit(s) allowed (${EXPECTED_EDITS.join(', ')})`);
-    d = kept;
+      const key = m && b[+m[2]] && keyOf(b[+m[2]]);
+      return !(m && key && allowed.has(`${m[1]}.${key}.${m[3]}`));
+    });
   }
+
   if (d.length) {
-    console.error(`✗ ${k} changed beyond the intended addition${added.length ? ' of ' + added.join(', ') : ''}:`);
-    d.slice(0, 10).forEach((x) => console.error('    ' + x));
+    console.error(`✗ ${k} changed beyond what was intended:`);
+    d.slice(0, 8).forEach((x) => console.error('    ' + x));
     bad++;
-  } else if (added.length) {
-    const rows = now.filter((x) => added.includes(x && (x.id || x.k)));
-    console.log(`✓ ${k}: ${before.length} → ${now.length}, the only change being ` +
-                rows.map((r) => `{${r.id ? 'id' : 'k'}:"${r.id || r.k}"}`).join(', '));
+  } else if (added.length || removed.length) {
+    const bits = [];
+    if (added.length) bits.push('+' + added.join(', +'));
+    if (removed.length) bits.push('−' + removed.join(', −'));
+    console.log(`✓ ${k}: ${before.length} → ${now.length}, the only change being ${bits.join('  ')}`);
   } else {
     console.log(`✓ ${k} unchanged`);
   }
 }
 
 console.log('');
-if (bad) { console.error('✗ ' + (stale ? 'model and fixtures disagree — see above'
-                                       : 'change is NOT additive — see above')); process.exit(1); }
-console.log(stale
-  ? '✓ model matches the current fixtures (additivity itself was proved before they were regenerated)'
-  : '✓ change is additive: existing behaviour untouched, tables differ only by the intended rows');
+if (bad) { console.error('✗ this change did more than it was meant to — see above'); process.exit(1); }
+console.log('✓ the change did exactly what it was meant to: intended scenarios moved, ' +
+            'everything else untouched, tables differ only as declared');

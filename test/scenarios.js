@@ -278,6 +278,14 @@ module.exports = [
     lines: [L({ w: 30, h: 20, qty: 10, dcut: 'through' })],
   },
   {
+    id: 'dcut_none_small_part',
+    note: 'A SMALL hand-trimmed part, 6 × 4 ×20. Pairs with dcut_none_wall_size to pin that '
+        + 'trim time scales with edge length — a flat per-piece figure calibrated on a 55 × 60 '
+        + 'window would charge a quarter hour to trim a 6 × 4.',
+    call: 'calcLine',
+    lines: [L({ w: 6, h: 4, qty: 20, dcut: 'none' })],
+  },
+  {
     id: 'warn_nest_exceeds_bed',
     note: 'A die-cut part 40" long against a 36" bed depth. Nothing checked this on the '
         + 'roll path before 1.2.0 — it priced a cut that could not happen. Warns now.',

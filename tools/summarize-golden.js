@@ -55,6 +55,7 @@ const EXPECT = {
   dcut_none_vs_through:  r => r.ops.some(o => /Hand trim/.test(o.n)),
   dcut_through_pair:     r => r.ops.some(o => /Die cut/.test(o.n)),
   warn_nest_exceeds_bed: r => r.warn.some(w => /cutter bed/.test(w)),
+  dcut_none_small_part:  r => !r.error && r.ops.some(o => /Hand trim/.test(o.n)),
   quote_no_substrate_multiline:
                          r => r.good.length === 3 && r.shipC > 0
                               && r.good.every(g => !g.two || g.rig === null),
@@ -115,6 +116,21 @@ const a = g.results.staircase_100, b = g.results.staircase_101;
 const ua = a.base / a.qty, ub = b.base / b.qty;
 console.log('\nstaircase check — 100 pc @ ' + money(ua) + '/pc vs 101 pc @ ' + money(ub) + '/pc' +
   (ub > ua ? '  ✓ steps UP as expected' : '  ✗ DID NOT STEP UP'));
+
+// ---- hand trim scales with edge length, not flat per piece ----
+const big = g.results.dcut_none_wall_size, small = g.results.dcut_none_small_part;
+if (big && small) {
+  const per = (r) => {
+    const t = r.ops.find(o => /Hand trim/.test(o.n));
+    return t ? (t.lh * 60) / r.qty : null;
+  };
+  const pb = per(big), ps = per(small);
+  const eb = 2 * (big.w + big.h), es = 2 * (small.w + small.h);
+  console.log('\nhand trim scaling');
+  console.log('  ' + big.w + ' × ' + big.h + '  ' + eb.toFixed(0) + '" edge  →  ' + pb.toFixed(1) + ' min/pc');
+  console.log('  ' + small.w + ' × ' + small.h + '   ' + es.toFixed(0) + '" edge  →  ' + ps.toFixed(1) + ' min/pc');
+  console.log('  ' + (ps < pb ? '✓ scales with edge length' : '✗ NOT scaling — a flat per-piece figure has crept back in'));
+}
 
 // ---- branch checks ----
 let bad = 0;

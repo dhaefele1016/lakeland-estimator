@@ -19,7 +19,7 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
 'use strict';
 
-const MODEL_VERSION = '1.2.0';
+const MODEL_VERSION = '1.3.0';
 
 /* ---------------- material library (real purchase prices) ---------------- */
 const R=(w,lenFt,cost)=>({rollW:w,lenFt,cost,psf:cost/(w/12*lenFt)});
@@ -86,6 +86,7 @@ const ROLES=[
  {k:'opMount',  l:'Mount to substrate',  d:'terry'},
  {k:'opPrecut', l:'Pre-cut to bed',      d:'terry'},
  {k:'opCut',    l:'Die cut',             d:'mark'},
+ {k:'opTrim',   l:'Hand trim',           d:'terry'},
  {k:'opWeed',   l:'Weed &amp; inspect',      d:'karen'},
  {k:'opShip',   l:'Pack &amp; ship',         d:'karen'},
 ];
@@ -123,7 +124,8 @@ const PARAMS=[
  {g:'Labor, finishing &amp; rates', k:'artNew',   l:'Prepress — new graphic (hr)', d:0.75, s:'shop'},
  {g:'Labor, finishing &amp; rates', k:'artRep',   l:'Prepress — repeat (hr)',      d:0.10, s:'shop'},
  {g:'Labor, finishing &amp; rates', k:'weedSec',  l:'Weed &amp; inspect (sec/piece)',  d:6,   s:'shop'},
- {g:'Labor, finishing &amp; rates', k:'trimMin',  l:'Hand trim when not die cut (min/piece)', d:3, s:'shop'},
+ {g:'Labor, finishing &amp; rates', k:'trimHandleMin', l:'Hand trim — place &amp; square each piece (min)', d:2, s:'shop'},
+ {g:'Labor, finishing &amp; rates', k:'trimIpm',       l:'Hand trim — edge cut speed (in/min)', d:18, s:'shop'},
  {g:'Labor, finishing &amp; rates', k:'shipHr',   l:'Pack &amp; ship per QUOTE (hr)',  d:0.2, s:'leg'},
  {g:'Labor, finishing &amp; rates', k:'spoil',    l:'Material spoilage (%)',       d:5,    s:'shop'},
  {g:'Labor, finishing &amp; rates', k:'margin',   l:'Target gross margin (%)',     d:35,   s:'shop'},
@@ -338,9 +340,15 @@ function calcLine(ctx,L,qtyOverride){
     if(ph>(+P.bedH)+1e-9 || nestW>(+P.bedW)+1e-9)
       warn.push(`The nest is ${f2(nestW)}" × ${f2(ph)}" against a ${P.bedW}×${P.bedH}" cutter bed — it will not fit the flatbed as laid out.`);
   } else {
-    /* Trimmed by hand instead — straightedge on a table, no machine time. */
-    const trimHr=qty*(+P.trimMin)/60;
-    add('Hand trim — no die cut',0,trimHr,0,'opCut',`${qty} × ${P.trimMin} min by hand`);
+    /* Trimmed by hand instead — a straightedge on a table, no machine time. Same
+       shape as the die cut it replaces: a fixed allowance per piece for placing and
+       squaring it, plus the edge length actually cut. A flat per-piece figure would
+       only ever be right at one part size. Charged to its own work centre, because
+       the point of this branch is that nobody touches the flatbed. */
+    const edgeIn=qty*2*(w+h);
+    const trimHr=qty*(+P.trimHandleMin)/60 + edgeIn/(+P.trimIpm)/60;
+    add('Hand trim — no die cut',0,trimHr,0,'opTrim',
+        `${qty} × ${P.trimHandleMin} min handling + ${(edgeIn/12).toFixed(0)} ft edge ÷ ${P.trimIpm} in/min`);
   }
   add('Weed &amp; inspect',0,qty*(+P.weedSec)/3600,0,'opWeed',`${qty} × ${P.weedSec} sec`);
 
